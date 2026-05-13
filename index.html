@@ -15,7 +15,7 @@
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            /* 锁定背景图 */
+            /* 关键：这里已经改成了你说的 bg.jpg */
             background-image: url('bg.jpg'); 
             background-size: cover;
             background-position: center;
@@ -27,13 +27,13 @@
             overflow: hidden;
         }
 
-        /* 模糊遮罩层：解决背景割裂感 */
+        /* 模糊遮罩层 */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.25); 
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: -1;
         }
 
@@ -49,12 +49,11 @@
         /* 主显示区 */
         #stage { display: none; width: 90%; max-width: 850px; flex-direction: column; gap: 15px; position: relative; }
 
-        /* 节点区：参考 image_1e25df.png */
         .nodes-header { display: flex; justify-content: space-around; align-items: flex-end; padding: 0 40px; }
         .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 2px #000; }
         .node pre { margin: 0; line-height: 1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
 
-        /* 正文纸张：S4U 经典排版 */
+        /* 正文纸张 */
         .dialogue-box {
             background: var(--paper-beige);
             border: 1px solid #000;
@@ -73,7 +72,6 @@
             font-size: 11px; font-weight: 900; padding: 2px 10px; border: 1px solid #000;
         }
 
-        /* 极致像素正文字体 */
         #text-area { 
             font-size: 20px; 
             line-height: 2.6; 
@@ -81,10 +79,8 @@
             white-space: pre-wrap; 
             letter-spacing: 0.12em;
             font-family: "Zpix", "SimSun", monospace;
-            text-rendering: optimizeSpeed;
         }
 
-        /* 审计日志底栏 */
         .audit-footer {
             background: rgba(15, 15, 15, 0.95); color: #ccc; padding: 20px 25px;
             font-family: 'Courier New', monospace; font-size: 13px;
@@ -98,14 +94,12 @@
 </head>
 <body>
 
-    <!-- 进度条启动页 -->
     <div id="launcher" onclick="attemptStart()">
         <div style="font-size: 14px; color: #7a7a6a; letter-spacing: 2px; font-family: 'Zpix', monospace;">INITIALIZING_LIFE_RECONSTRUCTION</div>
         <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
         <div style="margin-top: 15px; font-size: 10px; color: #b2b2a1; font-family: monospace;">> STATUS: READY_TO_RECONSTRUCT</div>
     </div>
 
-    <!-- 主展示区 -->
     <div id="stage">
         <div class="nodes-header">
             <div class="node"><pre>  ,___,
@@ -113,7 +107,6 @@
  /)_)
   " "</pre>[Node: Refac]</div>
             <div class="node">
-                <!-- 像素大头海鸥参考 f6891faedfb1b6fe378332013789de44.jpg -->
                 <pre>   ___| |_
   |  _   _|
  <span style="color:orange;">[=]</span>| o |
@@ -143,8 +136,10 @@
             "如果猫头鹰在清晨起飞，那时候的我被多巴胺和救助感蒙蔽。那个时候的我只是沉浸在一种救助别人和欣赏别人痛苦的自满自足之中，根本就察觉不到他。",
             "如果猫头鹰在正午起飞，在加速冲刺，试图用不断的接触和高密度的互动来让时间的密度大一些，我依旧没看到我在逃避自我建设，逃避真正的责任。我没有想寻求短择关系，但显然我身上没有什么显示我正在积极的投入自我建设。",
             "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性。拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。",
-            "现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受。我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
-            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
+            "现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。",
+            "我在相处过程中符号化了所有人，却逃避了最直接的感受。我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
+            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
+            "本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
             "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。",
             "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。",
             "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies."
@@ -152,10 +147,9 @@
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, loaded = false;
 
-        // 模拟加载逻辑
         function fakeLoad() {
             if (progress < 100) {
-                progress += Math.random() * 15;
+                progress += Math.random() * 18;
                 if (progress > 100) progress = 100;
                 document.getElementById('bar').style.width = progress + "%";
                 setTimeout(fakeLoad, 100);
