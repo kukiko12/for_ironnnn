@@ -9,7 +9,7 @@
             --s4u-magenta: #ff0055;
             --s4u-cyan: #00f2ff;
             --s4u-yellow: #ffee00;
-            --paper-beige: #fefaf2;
+            --paper-color: #fdfaf2; /* 信纸米色 */
         }
 
         body, html {
@@ -26,78 +26,121 @@
             overflow: hidden;
         }
 
-        /* 模糊遮罩 */
+        /* 背景模糊 */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.25); 
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.35); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             z-index: 1;
         }
 
-        /* 启动进度条界面 - 初始 z-index 最高 */
+        /* --- 启动页 --- */
         #launcher {
             position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
             background: #f5f2e8; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
+            justify-content: center; align-items: center; cursor: pointer;
         }
-        .progress-bar { width: 300px; height: 4px; background: #dcdcc6; margin-top: 15px; }
+
+        .loading-title {
+            font-size: 32px; /* 进一步放大 */
+            color: #333;
+            letter-spacing: 6px;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .progress-bar { width: 450px; height: 4px; background: #dcdcc6; position: relative; }
         .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); }
 
-        /* 主展示区 - z-index 位于遮罩之上 */
+        #start-prompt {
+            margin-top: 50px;
+            font-size: 20px;
+            color: var(--s4u-magenta);
+            display: none;
+            animation: blink 1.2s infinite;
+        }
+
+        /* --- 主舞台 --- */
         #stage { 
             display: none; width: 90%; max-width: 850px; 
-            flex-direction: column; gap: 15px; position: relative; z-index: 10;
+            flex-direction: column; gap: 20px; position: relative; z-index: 10;
         }
 
         .nodes-header { display: flex; justify-content: space-around; align-items: flex-end; padding: 0 40px; }
         .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 2px #000; }
         .node pre { margin: 0; line-height: 1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
 
+        /* --- 褶皱信纸容器 --- */
         .dialogue-box {
-            background: var(--paper-beige);
-            border: 1px solid #000;
+            position: relative;
+            background: var(--paper-color);
+            /* 模拟褶皱效果的混合渐变 */
+            background-image: 
+                linear-gradient(135deg, rgba(0,0,0,0.02) 25%, transparent 25%), 
+                linear-gradient(225deg, rgba(0,0,0,0.02) 25%, transparent 25%),
+                linear-gradient(45deg, rgba(255,255,255,0.3) 10%, transparent 10%),
+                linear-gradient(170deg, transparent 40%, rgba(0,0,0,0.03) 45%, rgba(0,0,0,0.05) 50%, transparent 55%);
+            background-size: 100% 100%, 100% 100%, 50px 50px, 100% 100%;
+            
+            border: 1px solid #d1cdb7;
             border-left: 15px solid var(--s4u-magenta);
             border-right: 15px solid var(--s4u-cyan);
-            padding: 60px 70px;
-            box-shadow: 20px 20px 0px rgba(0,0,0,0.25);
-            position: relative; min-height: 500px;
+            padding: 70px 80px;
+            box-shadow: 25px 25px 0px rgba(0,0,0,0.2);
+            min-height: 520px;
             box-sizing: border-box;
-            cursor: pointer;
+        }
+
+        /* 纸张装饰线 */
+        .dialogue-box::after {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(transparent, transparent 39px, rgba(200, 190, 160, 0.15) 40px);
+            pointer-events: none;
         }
 
         .dialogue-box::before {
             content: "SYSTEM // RELATIONSHIP_RECONSTRUCTION";
             position: absolute; top: -12px; left: 40px;
             background: var(--s4u-yellow); color: #000;
-            font-size: 11px; font-weight: 900; padding: 2px 10px; border: 1px solid #000;
+            font-size: 11px; font-weight: 900; padding: 2px 12px; border: 1px solid #000;
+            z-index: 2;
         }
 
         #text-area { 
-            font-size: 20px; line-height: 2.6; color: #111; 
-            white-space: pre-wrap; letter-spacing: 0.12em;
+            font-size: 20px; line-height: 2.8; color: #2c2c2c; 
+            white-space: pre-wrap; letter-spacing: 0.1em;
+            position: relative; z-index: 1;
         }
 
         .audit-footer {
-            background: rgba(15, 15, 15, 0.95); color: #ccc; padding: 20px 25px;
+            background: rgba(10, 10, 10, 0.95); color: #bbb; padding: 25px 30px;
             font-family: 'Courier New', monospace; font-size: 13px;
-            text-align: right; line-height: 1.7;
+            text-align: right; line-height: 1.6;
         }
 
-        .click-proceed { position: absolute; bottom: 30px; right: 50px; font-size: 10px; color: #888; animation: blink 1.5s infinite; }
+        .click-proceed { position: absolute; bottom: 35px; right: 55px; font-size: 11px; color: #888; animation: blink 1.5s infinite; z-index: 2; }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
-<body>
+<body onclick="attemptStart()">
 
     <div class="bg-overlay"></div>
 
+    <!-- 启动页 -->
     <div id="launcher">
-        <div style="font-size: 14px; color: #7a7a6a; letter-spacing: 2px;">INITIALIZING_LIFE_RECONSTRUCTION</div>
+        <div class="loading-title">INITIALIZING_LIFE_RECONSTRUCTION</div>
         <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
-        <div id="status-text" style="margin-top: 15px; font-size: 10px; color: #b2b2a1;">> STATUS: READY_TO_BOOT</div>
+        <div id="start-prompt">[ CLICK_TO_PROCEED ]</div>
+        <div style="margin-top: 80px; font-size: 11px; color: #b2b2a1; font-family: monospace;">
+            > RECONSTRUCTION_MODE: ACTIVE<br>
+            > IDENTITY_CONFIRMED: Junxian Zhou
+        </div>
     </div>
 
+    <!-- 主展示区 -->
     <div id="stage">
         <div class="nodes-header">
             <div class="node"><pre>  ,___,
@@ -113,14 +156,15 @@
   > ^ <</pre>[Node: Spec]</div>
         </div>
 
-        <div class="dialogue-box" onclick="nextPage()">
+        <div class="dialogue-box" onclick="event.stopPropagation(); nextPage();">
             <div id="text-area"></div>
             <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
         </div>
 
         <div class="audit-footer">
             > Executor: <span style="color: var(--s4u-cyan);">Junxian Zhou;</span><br>
-            > Objective: <span style="color: var(--s4u-yellow);">Relationship_Reconstruction;</span>
+            > Contributor: <span style="color: var(--s4u-magenta);">Xinyu Shen;</span><br>
+            > Status: <span style="color: var(--s4u-yellow);">Relationship_Reconstruction_Active;</span>
         </div>
     </div>
 
@@ -137,28 +181,33 @@
             "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies."
         ];
 
-        let currentPage = 0, charIndex = 0, isTyping = false, progress = 0;
+        let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
 
-        // 暴力进度条逻辑
         const bar = document.getElementById('bar');
         const launcher = document.getElementById('launcher');
         const stage = document.getElementById('stage');
+        const prompt = document.getElementById('start-prompt');
 
         function runLoader() {
             if (progress < 100) {
-                progress += 5;
+                progress += 2.5;
                 bar.style.width = progress + "%";
-                setTimeout(runLoader, 50);
+                setTimeout(runLoader, 60);
             } else {
-                // 进度跑完，强制切换
+                canStart = true;
+                prompt.style.display = 'block';
+            }
+        }
+
+        runLoader();
+
+        function attemptStart() {
+            if (canStart) {
                 launcher.style.display = 'none';
                 stage.style.display = 'flex';
                 showPage();
             }
         }
-
-        // 页面一旦加载即刻运行
-        runLoader();
 
         function showPage() {
             if (currentPage >= pages.length) return;
@@ -174,7 +223,7 @@
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeChar, 40);
+                setTimeout(typeChar, 45);
             } else {
                 isTyping = false;
                 document.getElementById('proceed-hint').style.display = "block";
@@ -184,7 +233,9 @@
         function nextPage() {
             if (isTyping) return;
             currentPage++;
-            if (currentPage < pages.length) showPage();
+            if (currentPage < pages.length) {
+                showPage();
+            }
         }
     </script>
 </body>
