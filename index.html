@@ -9,7 +9,7 @@
             --s4u-magenta: #ff0055;
             --s4u-cyan: #00f2ff;
             --s4u-yellow: #ffee00;
-            --paper-color: #fdfaf2; /* 信纸米色 */
+            --paper-color: #fdfaf2;
         }
 
         body, html {
@@ -26,7 +26,6 @@
             overflow: hidden;
         }
 
-        /* 背景模糊 */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.35); 
@@ -43,7 +42,7 @@
         }
 
         .loading-title {
-            font-size: 32px; /* 进一步放大 */
+            font-size: 32px;
             color: #333;
             letter-spacing: 6px;
             margin-bottom: 40px;
@@ -55,50 +54,39 @@
         .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); }
 
         #start-prompt {
-            margin-top: 50px;
-            font-size: 20px;
-            color: var(--s4u-magenta);
-            display: none;
-            animation: blink 1.2s infinite;
+            margin-top: 50px; font-size: 20px; color: var(--s4u-magenta);
+            display: none; animation: blink 1.2s infinite;
         }
 
-        /* --- 主舞台 --- */
+        /* --- 主展示区 --- */
         #stage { 
             display: none; width: 90%; max-width: 850px; 
-            flex-direction: column; gap: 20px; position: relative; z-index: 10;
+            flex-direction: column; gap: 10px; position: relative; z-index: 10;
         }
 
         .nodes-header { display: flex; justify-content: space-around; align-items: flex-end; padding: 0 40px; }
         .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 2px #000; }
         .node pre { margin: 0; line-height: 1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
 
-        /* --- 褶皱信纸容器 --- */
+        /* --- 固定尺寸褶皱信纸 --- */
         .dialogue-box {
             position: relative;
             background: var(--paper-color);
-            /* 模拟褶皱效果的混合渐变 */
             background-image: 
                 linear-gradient(135deg, rgba(0,0,0,0.02) 25%, transparent 25%), 
                 linear-gradient(225deg, rgba(0,0,0,0.02) 25%, transparent 25%),
-                linear-gradient(45deg, rgba(255,255,255,0.3) 10%, transparent 10%),
                 linear-gradient(170deg, transparent 40%, rgba(0,0,0,0.03) 45%, rgba(0,0,0,0.05) 50%, transparent 55%);
-            background-size: 100% 100%, 100% 100%, 50px 50px, 100% 100%;
-            
+            background-size: 100% 100%;
             border: 1px solid #d1cdb7;
             border-left: 15px solid var(--s4u-magenta);
             border-right: 15px solid var(--s4u-cyan);
             padding: 70px 80px;
             box-shadow: 25px 25px 0px rgba(0,0,0,0.2);
+            /* 关键：去掉动画过渡，锁死高度 */
+            width: 100%;
             min-height: 520px;
             box-sizing: border-box;
-        }
-
-        /* 纸张装饰线 */
-        .dialogue-box::after {
-            content: "";
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(transparent, transparent 39px, rgba(200, 190, 160, 0.15) 40px);
-            pointer-events: none;
+            overflow: hidden;
         }
 
         .dialogue-box::before {
@@ -106,22 +94,28 @@
             position: absolute; top: -12px; left: 40px;
             background: var(--s4u-yellow); color: #000;
             font-size: 11px; font-weight: 900; padding: 2px 12px; border: 1px solid #000;
-            z-index: 2;
         }
 
         #text-area { 
             font-size: 20px; line-height: 2.8; color: #2c2c2c; 
             white-space: pre-wrap; letter-spacing: 0.1em;
-            position: relative; z-index: 1;
+            font-family: "Zpix", "SimSun", monospace;
         }
 
+        /* --- 审计日志底栏：完全参考 image_1db1d7.png --- */
         .audit-footer {
-            background: rgba(10, 10, 10, 0.95); color: #bbb; padding: 25px 30px;
-            font-family: 'Courier New', monospace; font-size: 13px;
-            text-align: right; line-height: 1.6;
+            background: rgba(18, 18, 18, 0.95); 
+            color: #ccc; 
+            padding: 25px 35px;
+            font-family: 'Courier New', monospace; 
+            font-size: 13px;
+            text-align: right; 
+            line-height: 1.8;
+            border-top: 1px solid #333;
         }
 
-        .click-proceed { position: absolute; bottom: 35px; right: 55px; font-size: 11px; color: #888; animation: blink 1.5s infinite; z-index: 2; }
+        .click-proceed { position: absolute; bottom: 35px; right: 55px; font-size: 11px; color: #888; animation: blink 1.5s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
@@ -129,18 +123,12 @@
 
     <div class="bg-overlay"></div>
 
-    <!-- 启动页 -->
     <div id="launcher">
         <div class="loading-title">INITIALIZING_LIFE_RECONSTRUCTION</div>
         <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
         <div id="start-prompt">[ CLICK_TO_PROCEED ]</div>
-        <div style="margin-top: 80px; font-size: 11px; color: #b2b2a1; font-family: monospace;">
-            > RECONSTRUCTION_MODE: ACTIVE<br>
-            > IDENTITY_CONFIRMED: Junxian Zhou
-        </div>
     </div>
 
-    <!-- 主展示区 -->
     <div id="stage">
         <div class="nodes-header">
             <div class="node"><pre>  ,___,
@@ -161,10 +149,10 @@
             <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
         </div>
 
+        <!-- 修复后的日志区 -->
         <div class="audit-footer">
             > Executor: <span style="color: var(--s4u-cyan);">Junxian Zhou;</span><br>
-            > Contributor: <span style="color: var(--s4u-magenta);">Xinyu Shen;</span><br>
-            > Status: <span style="color: var(--s4u-yellow);">Relationship_Reconstruction_Active;</span>
+            > Objective: <span style="color: var(--s4u-yellow);">Relationship_Reconstruction;</span>
         </div>
     </div>
 
@@ -183,19 +171,14 @@
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
 
-        const bar = document.getElementById('bar');
-        const launcher = document.getElementById('launcher');
-        const stage = document.getElementById('stage');
-        const prompt = document.getElementById('start-prompt');
-
         function runLoader() {
             if (progress < 100) {
-                progress += 2.5;
-                bar.style.width = progress + "%";
+                progress += 3;
+                document.getElementById('bar').style.width = progress + "%";
                 setTimeout(runLoader, 60);
             } else {
                 canStart = true;
-                prompt.style.display = 'block';
+                document.getElementById('start-prompt').style.display = 'block';
             }
         }
 
@@ -203,16 +186,15 @@
 
         function attemptStart() {
             if (canStart) {
-                launcher.style.display = 'none';
-                stage.style.display = 'flex';
+                document.getElementById('launcher').style.display = 'none';
+                document.getElementById('stage').style.display = 'flex';
                 showPage();
             }
         }
 
         function showPage() {
             if (currentPage >= pages.length) return;
-            isTyping = true;
-            charIndex = 0;
+            isTyping = true; charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
             document.getElementById('proceed-hint').style.display = "none";
             typeChar();
@@ -223,7 +205,7 @@
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeChar, 45);
+                setTimeout(typeChar, 65); // 调慢一点点，增加“缓慢出现”的质感
             } else {
                 isTyping = false;
                 document.getElementById('proceed-hint').style.display = "block";
@@ -233,9 +215,7 @@
         function nextPage() {
             if (isTyping) return;
             currentPage++;
-            if (currentPage < pages.length) {
-                showPage();
-            }
+            if (currentPage < pages.length) showPage();
         }
     </script>
 </body>
