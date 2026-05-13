@@ -18,3 +18,15 @@ commit 5.13 把小猫改成粉色的，优化一下启动页面
    [ STATUS: GOLDEN_NAILONG_v4.0 ]
    这是一只亮黄色的、短腿胖奶龙。
 </pre> 妈的这奶龙也太丑了
+
+<pre class="dog-pre" id="dog-art" style="color: #6d6d5c; opacity: 1;">
+       __      _
+     o'')}____//
+      `_/      )
+      (_(_/-(_/
+
+    [ LOG: DOG_REINSTATED ]
+    兜兜转转，还是路边的这条。
+    虽然平凡，但它足够真实。
+</pre>
+感觉这狗也好丑
