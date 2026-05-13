@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Life_Reconstruction_JunxianZhou</title>
-    <!-- 引入 Zpix 像素字体 -->
+    <!-- 引入像素字体 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zpix-web@1.1.8/dist/zpix.css">
     <style>
         :root {
@@ -11,68 +11,58 @@
             --s4u-cyan: #00f2ff;
             --s4u-yellow: #ffee00;
             --paper-beige: #fefaf2;
-            --bg-warm: #f5f2e8;
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background-color: #e8e4d8;
-            background-image: url('image_1e80ab.jpg'); 
+            /* 锁定背景图 */
+            background-image: url('bg.jpg'); 
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            /* 禁用平滑渲染，确保像素字体的硬核质感 */
             image-rendering: pixelated;
+            font-family: "Zpix", "SimSun", "Monaco", monospace;
             -webkit-font-smoothing: none;
             display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
         }
 
-        /* 修复背景割裂感：毛玻璃模糊 + 深度遮罩 */
+        /* 模糊遮罩层：解决背景割裂感 */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(232, 228, 216, 0.5); 
+            background: rgba(0, 0, 0, 0.25); 
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             z-index: -1;
         }
 
-        /* --- Loading 启动条 --- */
+        /* 启动进度条界面 */
         #launcher {
             position: fixed; z-index: 1000; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-warm);
-            display: flex; flex-direction: column;
+            background: #f5f2e8; display: flex; flex-direction: column;
             justify-content: center; align-items: center; cursor: pointer;
         }
-        .loading-container { width: 320px; text-align: center; }
-        .loading-text { font-family: "Zpix", monospace; font-size: 14px; color: #7a7a6a; margin-bottom: 15px; letter-spacing: 2px; }
-        .progress-bar { width: 100%; height: 4px; background: #dcdcc6; position: relative; }
-        .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); transition: width 0.1s; }
+        .progress-bar { width: 300px; height: 4px; background: #dcdcc6; margin-top: 15px; }
+        .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); transition: width 0.1s linear; }
 
-        /* --- 主显示舞台：取消任何动态宽度变换 --- */
-        #stage { 
-            display: none; 
-            width: 90%; 
-            max-width: 850px; 
-            flex-direction: column; 
-            gap: 15px; 
-            position: relative; 
-        }
+        /* 主显示区 */
+        #stage { display: none; width: 90%; max-width: 850px; flex-direction: column; gap: 15px; position: relative; }
 
+        /* 节点区：参考 image_1e25df.png */
         .nodes-header { display: flex; justify-content: space-around; align-items: flex-end; padding: 0 40px; }
-        .node { text-align: center; color: #333; font-size: 11px; text-shadow: 1px 1px 1px #fff; }
-        .node pre { margin: 0; line-height: 1.1; margin-bottom: 8px; font-family: monospace; font-weight: bold; }
+        .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 2px #000; }
+        .node pre { margin: 0; line-height: 1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
 
-        /* --- S4U 审计纸张：取消动画，直接呈现 --- */
+        /* 正文纸张：S4U 经典排版 */
         .dialogue-box {
             background: var(--paper-beige);
             border: 1px solid #000;
             border-left: 15px solid var(--s4u-magenta);
             border-right: 15px solid var(--s4u-cyan);
-            padding: 65px 75px;
-            box-shadow: 20px 20px 0px rgba(0,0,0,0.1);
-            position: relative;
-            min-height: 500px;
+            padding: 60px 70px;
+            box-shadow: 20px 20px 0px rgba(0,0,0,0.25);
+            position: relative; min-height: 500px;
             box-sizing: border-box;
         }
 
@@ -80,52 +70,42 @@
             content: "SYSTEM // RELATIONSHIP_RECONSTRUCTION";
             position: absolute; top: -12px; left: 40px;
             background: var(--s4u-yellow); color: #000;
-            font-family: "Zpix", monospace;
-            font-size: 11px; font-weight: 900; padding: 2px 12px; border: 1px solid #000;
+            font-size: 11px; font-weight: 900; padding: 2px 10px; border: 1px solid #000;
         }
 
-        /* 强制像素正文字体渲染 */
+        /* 极致像素正文字体 */
         #text-area { 
-            font-family: "Zpix", "SimSun", "Courier New", monospace;
             font-size: 20px; 
             line-height: 2.6; 
             color: #111; 
-            white-space: pre-wrap;
+            white-space: pre-wrap; 
             letter-spacing: 0.12em;
-            word-break: break-all;
+            font-family: "Zpix", "SimSun", monospace;
+            text-rendering: optimizeSpeed;
         }
 
+        /* 审计日志底栏 */
         .audit-footer {
-            background: rgba(15, 15, 15, 0.92); color: #bbb; padding: 25px;
+            background: rgba(15, 15, 15, 0.95); color: #ccc; padding: 20px 25px;
             font-family: 'Courier New', monospace; font-size: 13px;
-            text-align: right; line-height: 1.6;
+            text-align: right; line-height: 1.7;
             backdrop-filter: blur(5px);
         }
 
-        .click-proceed {
-            position: absolute; bottom: 30px; right: 50px;
-            font-family: "Zpix", monospace;
-            font-size: 10px; color: #888; animation: blink 1.5s infinite;
-        }
+        .click-proceed { position: absolute; bottom: 30px; right: 50px; font-size: 10px; color: #888; animation: blink 1.5s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <!-- Loading Bar 启动页 -->
+    <!-- 进度条启动页 -->
     <div id="launcher" onclick="attemptStart()">
-        <div class="loading-container">
-            <div class="loading-text" id="status-text">RECONSTRUCTING_LIFE_SYSTEM</div>
-            <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
-            <div style="margin-top:20px; font-size:10px; color:#b2b2a1; text-align:left; font-family:monospace;">
-                > IDENTITY: Junxian Zhou<br>
-                > MODE: RECONSTRUCTION<br>
-                > STATUS: CONNECTING...
-            </div>
-        </div>
+        <div style="font-size: 14px; color: #7a7a6a; letter-spacing: 2px; font-family: 'Zpix', monospace;">INITIALIZING_LIFE_RECONSTRUCTION</div>
+        <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
+        <div style="margin-top: 15px; font-size: 10px; color: #b2b2a1; font-family: monospace;">> STATUS: READY_TO_RECONSTRUCT</div>
     </div>
 
-    <!-- 主场景 -->
+    <!-- 主展示区 -->
     <div id="stage">
         <div class="nodes-header">
             <div class="node"><pre>  ,___,
@@ -133,11 +113,11 @@
  /)_)
   " "</pre>[Node: Refac]</div>
             <div class="node">
-                <!-- 修正后的海鸥参考 image_1e8b1c.png -->
-                <pre> (ˉ\ _ /ˉ)
-   \ o /
-    \ /
-     V</pre>
+                <!-- 像素大头海鸥参考 f6891faedfb1b6fe378332013789de44.jpg -->
+                <pre>   ___| |_
+  |  _   _|
+ <span style="color:orange;">[=]</span>| o |
+  |_____|</pre>
                 [Node: SeaGull]
             </div>
             <div class="node" style="color: var(--s4u-magenta);"><pre>  /\_/\
@@ -147,16 +127,13 @@
 
         <div class="dialogue-box" onclick="nextPage()">
             <div id="text-area"></div>
-            <div id="proceed-hint" class="click-proceed">CONTINUE ▼</div>
+            <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
         </div>
 
         <div class="audit-footer">
-            > [SYSTEM] Connection verified. No symbolization found.<br>
-            > <span style="color: var(--s4u-cyan);">void main() {</span><br>
             > Executor: <span style="color: var(--s4u-cyan);">Junxian Zhou;</span><br>
             > Contributor: <span style="color: var(--s4u-magenta);">Xinyu Shen;</span><br>
-            > Objective: <span style="color: var(--s4u-yellow);">Relationship_Reconstruction;</span><br>
-            > <span style="color: var(--s4u-cyan);">}</span>
+            > Status: <span style="color: var(--s4u-yellow);">Active_Self_Construction;</span>
         </div>
     </div>
 
@@ -165,30 +142,29 @@
             "密涅瓦的猫头鹰在黄昏起飞。所以在经历了这几天的闭门沉思之后，我才意识到，我一直以来维系自己生活的这套符号化法则有多么脆弱。",
             "如果猫头鹰在清晨起飞，那时候的我被多巴胺和救助感蒙蔽。那个时候的我只是沉浸在一种救助别人和欣赏别人痛苦的自满自足之中，根本就察觉不到他。",
             "如果猫头鹰在正午起飞，在加速冲刺，试图用不断的接触和高密度的互动来让时间的密度大一些，我依旧没看到我在逃避自我建设，逃避真正的责任。我没有想寻求短择关系，但显然我身上没有什么显示我正在积极的投入自我建设。",
-            "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性。拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。",
-            "我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。",
-            "我在相处过程中符号化了所有人，却逃避了最直接的感受。我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
-            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
-            "本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
+            "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性。拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。",
+            "现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受。我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
+            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
             "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。",
-            "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。\n\nMy sincerest apologies."
+            "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。",
+            "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies."
         ];
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, loaded = false;
 
+        // 模拟加载逻辑
         function fakeLoad() {
             if (progress < 100) {
-                progress += Math.random() * 20; // 加快点进度
+                progress += Math.random() * 15;
                 if (progress > 100) progress = 100;
                 document.getElementById('bar').style.width = progress + "%";
                 setTimeout(fakeLoad, 100);
             } else {
-                document.getElementById('status-text').innerHTML = "SYSTEM_LOADED";
+                document.getElementById('status-text').innerHTML = "SYSTEM_LOADED_READY";
                 document.getElementById('status-text').style.color = "#ff0055";
                 loaded = true;
             }
         }
-
         window.onload = fakeLoad;
 
         function attemptStart() {
@@ -212,7 +188,7 @@
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeChar, 45); // 稍微快一点
+                setTimeout(typeChar, 50);
             } else {
                 isTyping = false;
                 document.getElementById('proceed-hint').style.display = "block";
@@ -223,7 +199,7 @@
             if (isTyping) return;
             currentPage++;
             if (currentPage < pages.length) showPage();
-            else document.getElementById('proceed-hint').innerHTML = "SYSTEM_IDLE";
+            else document.getElementById('proceed-hint').innerHTML = "END_OF_RECORD";
         }
     </script>
 </body>
