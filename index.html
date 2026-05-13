@@ -42,21 +42,14 @@
         }
 
         .loading-title {
-            font-size: 32px;
-            color: #333;
-            letter-spacing: 6px;
-            margin-bottom: 40px;
-            text-align: center;
-            font-weight: bold;
+            font-size: 32px; color: #333; letter-spacing: 6px;
+            margin-bottom: 40px; text-align: center; font-weight: bold;
         }
 
         .progress-bar { width: 450px; height: 4px; background: #dcdcc6; position: relative; }
         .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); }
 
-        #start-prompt {
-            margin-top: 50px; font-size: 20px; color: var(--s4u-magenta);
-            display: none; animation: blink 1.2s infinite;
-        }
+        #start-prompt { margin-top: 50px; font-size: 20px; color: var(--s4u-magenta); display: none; animation: blink 1.2s infinite; }
 
         /* --- 主展示区 --- */
         #stage { 
@@ -68,7 +61,7 @@
         .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 2px #000; }
         .node pre { margin: 0; line-height: 1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
 
-        /* --- 固定尺寸褶皱信纸 --- */
+        /* --- 褶皱信纸 --- */
         .dialogue-box {
             position: relative;
             background: var(--paper-color);
@@ -81,16 +74,12 @@
             border-left: 15px solid var(--s4u-magenta);
             border-right: 15px solid var(--s4u-cyan);
             padding: 70px 80px;
-            box-shadow: 25px 25px 0px rgba(0,0,0,0.2);
-            /* 关键：去掉动画过渡，锁死高度 */
-            width: 100%;
-            min-height: 520px;
-            box-sizing: border-box;
-            overflow: hidden;
+            box-shadow: 25px 25px 0px rgba(0,0,0,0.25);
+            width: 100%; min-height: 520px; box-sizing: border-box;
         }
 
         .dialogue-box::before {
-            content: "SYSTEM // RELATIONSHIP_RECONSTRUCTION";
+            content: "SYSTEM // DE_SYMBOLIZATION_LOG";
             position: absolute; top: -12px; left: 40px;
             background: var(--s4u-yellow); color: #000;
             font-size: 11px; font-weight: 900; padding: 2px 12px; border: 1px solid #000;
@@ -102,20 +91,24 @@
             font-family: "Zpix", "SimSun", monospace;
         }
 
-        /* --- 审计日志底栏：完全参考 image_1db1d7.png --- */
+        /* --- 审计日志底栏：代码化重构 --- */
         .audit-footer {
             background: rgba(18, 18, 18, 0.95); 
             color: #ccc; 
             padding: 25px 35px;
             font-family: 'Courier New', monospace; 
             font-size: 13px;
-            text-align: right; 
+            text-align: left; /* 改为左对齐更有代码感 */
             line-height: 1.8;
             border-top: 1px solid #333;
         }
 
+        .code-keyword { color: var(--s4u-cyan); }
+        .code-var { color: #fff; }
+        .code-string { color: var(--s4u-yellow); }
+        .code-comment { color: #666; }
+
         .click-proceed { position: absolute; bottom: 35px; right: 55px; font-size: 11px; color: #888; animation: blink 1.5s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
@@ -149,10 +142,17 @@
             <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
         </div>
 
-        <!-- 修复后的日志区 -->
+        <!-- 重新设计的 int main() 日志区 -->
         <div class="audit-footer">
-            > Executor: <span style="color: var(--s4u-cyan);">Junxian Zhou;</span><br>
-            > Objective: <span style="color: var(--s4u-yellow);">Relationship_Reconstruction;</span>
+            <span class="code-keyword">int</span> main() { <br>
+            &nbsp;&nbsp;<span class="code-comment">// Reconstructing Life & Relationship</span><br>
+            &nbsp;&nbsp;<span class="code-keyword">void</span> audit() { <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Executor: <span class="code-var">Junxian Zhou;</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Contributor: <span class="code-var">Xinyu Shen;</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;Status: <span class="code-string">Relationship_Reconstruction_Active;</span><br>
+            &nbsp;&nbsp;} <br>
+            &nbsp;&nbsp;<span class="code-keyword">return</span> friends_and_peace(); <br>
+            }
         </div>
     </div>
 
@@ -162,8 +162,10 @@
             "如果猫头鹰在清晨起飞，那时候的我被多巴胺和救助感蒙蔽。那个时候的我只是沉浸在一种救助别人和欣赏别人痛苦的自满自足之中，根本就察觉不到他。",
             "如果猫头鹰在正午起飞，在加速冲刺，试图用不断的接触和高密度的互动来让时间的密度大一些，我依旧没看到我在逃避自我建设，逃避真正的责任。我没有想寻求短择关系，但显然我身上没有什么显示我正在积极的投入自我建设。",
             "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性。拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。",
-            "现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受。我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
-            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
+            "现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受。",
+            "我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
+            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
+            "本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
             "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。",
             "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。",
             "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies."
@@ -205,7 +207,7 @@
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeChar, 65); // 调慢一点点，增加“缓慢出现”的质感
+                setTimeout(typeChar, 65);
             } else {
                 isTyping = false;
                 document.getElementById('proceed-hint').style.display = "block";
