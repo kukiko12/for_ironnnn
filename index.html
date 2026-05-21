@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Life_Reconstruction_JunxianZhou</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zpix-web@1.1.8/dist/zpix.css">
     <style>
@@ -10,13 +11,14 @@
             --s4u-cyan: #00f2ff;
             --s4u-yellow: #ffee00;
             --paper-color: #fdfaf2;
+            --bg-dark: rgba(18, 18, 18, 0.96);
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
             background-color: #e8e4d8;
-            background-image: url('bg.jpg'); 
-            background-size: cover;
+            background-image: radial-gradient(rgba(0,0,0,0.15) 1px, transparent 0), url('bg.jpg'); 
+            background-size: 4px 4px, cover;
             background-position: center;
             background-attachment: fixed;
             image-rendering: pixelated;
@@ -24,13 +26,14 @@
             -webkit-font-smoothing: none;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
+            user-select: none;
         }
 
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.35); 
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(12, 10, 15, 0.45); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 1;
         }
 
@@ -39,89 +42,106 @@
             position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
             background: #f5f2e8; display: flex; flex-direction: column;
             justify-content: center; align-items: center; cursor: pointer;
+            transition: opacity 0.5s ease;
         }
 
         .loading-title {
-            font-size: 32px; color: #333; letter-spacing: 6px;
+            font-size: 28px; color: #222; letter-spacing: 4px;
             margin-bottom: 40px; text-align: center; font-weight: bold;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
         }
 
-        .progress-bar { width: 450px; height: 4px; background: #dcdcc6; position: relative; }
-        .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); }
+        .progress-bar { width: 350px; height: 6px; background: #dcdcc6; position: relative; border: 1px solid #c8c8b0; }
+        .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); transition: width 0.1s linear; }
 
-        #start-prompt { margin-top: 50px; font-size: 20px; color: var(--s4u-magenta); display: none; animation: blink 1.2s infinite; }
+        #start-prompt { margin-top: 50px; font-size: 18px; color: var(--s4u-magenta); display: none; animation: blink 1.2s infinite; font-weight: bold; }
 
         /* --- 主展示区 --- */
         #stage { 
-            display: none; width: 90%; max-width: 850px; 
-            flex-direction: column; gap: 10px; position: relative; z-index: 10;
+            display: none; width: 92%; max-width: 800px; 
+            flex-direction: column; gap: 15px; position: relative; z-index: 10;
+            animation: fadeIn 0.6s ease;
         }
 
-        .nodes-header { display: flex; justify-content: space-around; align-items: flex-end; padding: 0 40px; }
-        .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 2px #000; }
-        .node pre { margin: 0; line-height: 1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
+        .nodes-header { display: flex; justify-content: space-between; padding: 0 20px; }
+        .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 3px #000; opacity: 0.85; }
+        .node pre { margin: 0; line-height: 1.1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
 
-        /* --- 褶皱信纸 --- */
+        /* --- 褶皱信纸容器 --- */
         .dialogue-box {
             position: relative;
             background: var(--paper-color);
             background-image: 
-                linear-gradient(135deg, rgba(0,0,0,0.02) 25%, transparent 25%), 
-                linear-gradient(225deg, rgba(0,0,0,0.02) 25%, transparent 25%),
-                linear-gradient(170deg, transparent 40%, rgba(0,0,0,0.03) 45%, rgba(0,0,0,0.05) 50%, transparent 55%);
+                linear-gradient(135deg, rgba(0,0,0,0.015) 25%, transparent 25%), 
+                linear-gradient(225deg, rgba(0,0,0,0.015) 25%, transparent 25%),
+                linear-gradient(165deg, transparent 45%, rgba(0,0,0,0.02) 48%, rgba(0,0,0,0.04) 50%, transparent 52%);
             background-size: 100% 100%;
-            border: 1px solid #d1cdb7;
-            border-left: 15px solid var(--s4u-magenta);
-            border-right: 15px solid var(--s4u-cyan);
-            padding: 70px 80px;
-            box-shadow: 25px 25px 0px rgba(0,0,0,0.25);
-            width: 100%; min-height: 520px; box-sizing: border-box;
+            border: 2px solid #cbd2d6;
+            border-left: 12px solid var(--s4u-magenta);
+            border-right: 12px solid var(--s4u-cyan);
+            padding: 55px 60px 75px 60px;
+            box-shadow: 15px 15px 0px rgba(0,0,0,0.2);
+            width: 100%; min-height: 480px; box-sizing: border-box;
+            cursor: pointer;
+            transition: transform 0.1s ease;
         }
+        .dialogue-box:active { transform: scale(0.995); }
 
         .dialogue-box::before {
             content: "SYSTEM // DE_SYMBOLIZATION_LOG";
-            position: absolute; top: -12px; left: 40px;
+            position: absolute; top: -11px; left: 30px;
             background: var(--s4u-yellow); color: #000;
-            font-size: 11px; font-weight: 900; padding: 2px 12px; border: 1px solid #000;
+            font-size: 11px; font-weight: 900; padding: 2px 10px; border: 1px solid #000;
+            box-shadow: 2px 2px 0px #000;
         }
 
         #text-area { 
-            font-size: 20px; line-height: 2.8; color: #2c2c2c; 
-            white-space: pre-wrap; letter-spacing: 0.1em;
-            font-family: "Zpix", "SimSun", monospace;
+            font-size: 19px; line-height: 2.4; color: #232323; 
+            white-space: pre-wrap; letter-spacing: 0.05em;
+            word-break: break-all;
         }
 
-        /* --- 审计日志底栏：代码化重构 --- */
+        /* --- 严格规范的代码化底栏 --- */
         .audit-footer {
-            background: rgba(18, 18, 18, 0.95); 
-            color: #ccc; 
-            padding: 25px 35px;
-            font-family: 'Courier New', monospace; 
-            font-size: 13px;
-            text-align: left; /* 改为左对齐更有代码感 */
-            line-height: 1.8;
-            border-top: 1px solid #333;
+            background: var(--bg-dark); 
+            color: #b5cea8; 
+            padding: 20px 30px;
+            font-family: 'Consolas', 'Courier New', monospace; 
+            font-size: 12px;
+            text-align: left;
+            line-height: 1.6;
+            border: 1px solid #333;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.15);
         }
 
-        .code-keyword { color: var(--s4u-cyan); }
-        .code-var { color: #fff; }
-        .code-string { color: var(--s4u-yellow); }
-        .code-comment { color: #666; }
+        .code-keyword { color: #569cd6; }
+        .code-type { color: #4ec9b0; }
+        .code-var { color: #9cdcfe; }
+        .code-string { color: #ce9178; }
+        .code-comment { color: #6a9955; font-style: italic; }
 
-        .click-proceed { position: absolute; bottom: 35px; right: 55px; font-size: 11px; color: #888; animation: blink 1.5s infinite; }
+        .click-proceed { 
+            position: absolute; bottom: 25px; right: 35px; 
+            font-size: 12px; color: var(--s4u-magenta); 
+            font-weight: bold; animation: blink 1s infinite; 
+        }
+
         @keyframes blink { 50% { opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body onclick="attemptStart()">
+<body>
 
     <div class="bg-overlay"></div>
 
-    <div id="launcher">
+    <!-- 启动页 -->
+    <div id="launcher" onclick="attemptStart()">
         <div class="loading-title">INITIALIZING_LIFE_RECONSTRUCTION</div>
         <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
         <div id="start-prompt">[ CLICK_TO_PROCEED ]</div>
     </div>
 
+    <!-- 主舞台 -->
     <div id="stage">
         <div class="nodes-header">
             <div class="node"><pre>  ,___,
@@ -137,22 +157,20 @@
   > ^ <</pre>[Node: Spec]</div>
         </div>
 
-        <div class="dialogue-box" onclick="event.stopPropagation(); nextPage();">
+        <div class="dialogue-box" onclick="handleBoxClick()">
             <div id="text-area"></div>
             <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
         </div>
 
-        <!-- 重新设计的 int main() 日志区 -->
+        <!-- 修正为标准伪代码/极客规范的日志区 -->
         <div class="audit-footer">
-            <span class="code-keyword">int</span> main() { <br>
-            &nbsp;&nbsp;<span class="code-comment">// Reconstructing Life & Relationship</span><br>
-            &nbsp;&nbsp;<span class="code-keyword">void</span> audit() { <br>
-            &nbsp;&nbsp;&nbsp;&nbsp;Executor: <span class="code-var">Junxian Zhou;</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;Contributor: <span class="code-var">Xinyu Shen;</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;Status: <span class="code-string">Relationship_Reconstruction_Active;</span><br>
-            &nbsp;&nbsp;} <br>
-            &nbsp;&nbsp;<span class="code-keyword">return</span> friends_and_peace(); <br>
-            }
+            <span class="code-keyword">import</span> { <span class="code-var">reconstruct</span> } <span class="code-keyword">from</span> <span class="code-string">"life-framework"</span>;<br>
+            <span class="code-keyword">const</span> <span class="code-var">runtime</span> = <span class="code-keyword">new</span> <span class="code-type">AuditExecutor</span>({<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;executor: <span class="code-string">"Junxian Zhou"</span>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;contributor: <span class="code-string">"Xinyu Shen"</span>,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;status: <span class="code-type">Status</span>.<span class="code-var">RELATIONSHIP_RECONSTRUCTION_ACTIVE</span><br>
+            });<br>
+            <span class="code-keyword">export default</span> <span class="code-var">runtime</span>.<span class="code-var">execute</span>(() => <span class="code-string">"friends_and_peace"</span>);
         </div>
     </div>
 
@@ -172,31 +190,55 @@
         ];
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
+        let timer = null;
+
+        // 利用 Web Audio API 实时生成复古打字机/电子音效，无需外部音频源
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq = 800, duration = 0.01) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
 
         function runLoader() {
             if (progress < 100) {
-                progress += 3;
+                progress += 4;
+                if(progress > 100) progress = 100;
                 document.getElementById('bar').style.width = progress + "%";
-                setTimeout(runLoader, 60);
+                setTimeout(runLoader, 40);
             } else {
                 canStart = true;
                 document.getElementById('start-prompt').style.display = 'block';
             }
         }
-
         runLoader();
 
         function attemptStart() {
             if (canStart) {
-                document.getElementById('launcher').style.display = 'none';
-                document.getElementById('stage').style.display = 'flex';
-                showPage();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                playBeep(400, 0.1);
+                document.getElementById('launcher').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('launcher').style.display = 'none';
+                    document.getElementById('stage').style.display = 'flex';
+                    showPage();
+                }, 500);
             }
         }
 
         function showPage() {
             if (currentPage >= pages.length) return;
-            isTyping = true; charIndex = 0;
+            isTyping = true; 
+            charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
             document.getElementById('proceed-hint').style.display = "none";
             typeChar();
@@ -207,17 +249,43 @@
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeChar, 65);
+                if (charIndex % 2 === 0) playBeep(1200, 0.008); // 间歇性输出低音量打字音
+                timer = setTimeout(typeChar, 50);
             } else {
-                isTyping = false;
-                document.getElementById('proceed-hint').style.display = "block";
+                completePage();
             }
         }
 
-        function nextPage() {
-            if (isTyping) return;
-            currentPage++;
-            if (currentPage < pages.length) showPage();
+        function completePage() {
+            clearTimeout(timer);
+            isTyping = false;
+            document.getElementById('text-area').innerHTML = pages[currentPage];
+            const hint = document.getElementById('proceed-hint');
+            if (currentPage === pages.length - 1) {
+                hint.innerHTML = "[ ARCHIVE_CLOSED ]";
+                hint.style.color = "var(--s4u-cyan)";
+            } else {
+                hint.innerHTML = "PRESS_TO_CONTINUE ▼";
+            }
+            hint.style.display = "block";
+        }
+
+        function handleBoxClick() {
+            if (isTyping) {
+                // 如果正在打字，点击立即显示整页文本
+                completePage();
+                playBeep(600, 0.05);
+            } else {
+                // 如果文本已显示完毕，点击进入下一页
+                if (currentPage < pages.length - 1) {
+                    currentPage++;
+                    playBeep(900, 0.03);
+                    showPage();
+                } else {
+                    // 最后一页点击触发结束震动反馈
+                    playBeep(300, 0.2);
+                }
+            }
         }
     </script>
 </body>
