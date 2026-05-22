@@ -16,10 +16,10 @@
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background-color: #e8e4d8;
-            background-image: radial-gradient(rgba(0,0,0,0.15) 1px, transparent 0);
-            background-size: 4px 4px;
+            background-image: url('./bk.jpg');
+            background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
             image-rendering: pixelated;
             font-family: "Zpix", "SimSun", monospace;
@@ -31,9 +31,9 @@
 
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(12, 10, 15, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(12, 10, 15, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 1;
         }
 
@@ -75,7 +75,7 @@
             border-left: 12px solid var(--s4u-magenta);
             border-right: 12px solid var(--s4u-cyan);
             padding: 55px 60px 75px 60px;
-            box-shadow: 15px 15px 0px rgba(0,0,0,0.2);
+            box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 100%; min-height: 480px; box-sizing: border-box;
             cursor: pointer;
             transition: transform 0.1s ease;
@@ -127,7 +127,7 @@
             border-left: 4px solid var(--s4u-magenta);
             cursor: pointer;
             transition: all 0.15s ease;
-            background: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.7);
             display: flex;
             gap: 12px;
             align-items: center;
@@ -139,12 +139,15 @@
         }
         .choice-bracket { color: #999; font-size: 14px; }
         .choice-node { font-size: 15px; letter-spacing: 1px; min-width: 160px; font-weight: bold; }
+        .choice-text { color: #333; font-size: 16px; margin-left: 8px; }
 
         .choice-select-label {
-            margin-bottom: 35px;
-            color: #888;
-            font-size: 13px;
-            letter-spacing: 2px;
+            margin-bottom: 25px;
+            color: #444;
+            font-size: 15px;
+            line-height: 1.8;
+            letter-spacing: 1px;
+            font-weight: bold;
         }
 
         .end-message {
@@ -165,8 +168,9 @@
         #audio-panel {
             position: fixed; top: 15px; right: 15px;
             font-family: monospace; font-size: 11px;
-            color: #666; z-index: 9999;
+            color: #aaa; z-index: 9999;
             letter-spacing: 1px;
+            text-shadow: 1px 1px 2px #000;
         }
 
         @keyframes blink { 50% { opacity: 0; } }
@@ -233,15 +237,23 @@
             "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
             "本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
             "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。",
-            "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。",
-            "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies."
+            "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才息这着我该办的事情中，最重要的那一件。"
         ];
+
+        // 📝 在这里写你的情绪性质文本（这部分属于隐藏分支）
+        const secretEmotionPage = "（在这里删除本行，并替换成你自己准备写的、带有情绪性质且不消极的隐藏文本片段。）";
+
+        const finalPage = "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies.";
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
         let timer = null;
         let choicesShown = false;
+        
+        let emotionBranchChosen = false; 
+        let isReadingSecretPage = false;
+        let isReadingFinalPage = false;
+        let hasViewedEmotion = false; 
 
-        // 全量音频渐变管理器状态变量
         let currentAudio = null;
         let fadeInterval = null;
 
@@ -313,7 +325,6 @@
         }
 
         function showPage() {
-            if (currentPage >= pages.length) return;
             isTyping = true;
             charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
@@ -322,7 +333,15 @@
         }
 
         function typeChar() {
-            const text = pages[currentPage];
+            let text = "";
+            if (isReadingSecretPage) {
+                text = secretEmotionPage;
+            } else if (isReadingFinalPage) {
+                text = finalPage;
+            } else {
+                text = pages[currentPage];
+            }
+
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
@@ -336,15 +355,18 @@
         function completePage() {
             clearTimeout(timer);
             isTyping = false;
-            document.getElementById('text-area').innerHTML = pages[currentPage];
-            const hint = document.getElementById('proceed-hint');
-            if (currentPage === pages.length - 1) {
-                hint.innerHTML = "PRESS_TO_CONTINUE ▼";
-                hint.style.color = "var(--s4u-cyan)";
+            
+            if (isReadingSecretPage) {
+                document.getElementById('text-area').innerHTML = secretEmotionPage;
+            } else if (isReadingFinalPage) {
+                document.getElementById('text-area').innerHTML = finalPage;
             } else {
-                hint.innerHTML = "PRESS_TO_CONTINUE ▼";
-                hint.style.color = "var(--s4u-magenta)";
+                document.getElementById('text-area').innerHTML = pages[currentPage];
             }
+
+            const hint = document.getElementById('proceed-hint');
+            hint.innerHTML = "PRESS_TO_CONTINUE ▼";
+            hint.style.color = (isReadingFinalPage || currentPage === pages.length - 1 && !emotionBranchChosen) ? "var(--s4u-cyan)" : "var(--s4u-magenta)";
             hint.style.display = "block";
         }
 
@@ -354,23 +376,90 @@
             if (isTyping) {
                 completePage();
                 playBeep(600, 0.05);
-            } else {
-                if (currentPage < pages.length - 1) {
-                    currentPage++;
-                    playBeep(900, 0.03);
-                    showPage();
-                } else {
-                    showChoices();
-                }
+                return;
+            }
+
+            if (!emotionBranchChosen && currentPage === pages.length - 1 && !isReadingSecretPage && !isReadingFinalPage) {
+                showEmotionInterceptorChoices();
+                return;
+            }
+
+            if (isReadingSecretPage) {
+                isReadingSecretPage = false;
+                isReadingFinalPage = true;
+                playBeep(900, 0.03);
+                showPage();
+                return;
+            }
+
+            if (isReadingFinalPage) {
+                showFinalNodeChoices();
+                return;
+            }
+
+            if (currentPage < pages.length - 1) {
+                currentPage++;
+                playBeep(900, 0.03);
+                showPage();
             }
         }
 
-        // 纯净版交互界面：彻底剥离杂音与剧透，只有最冷酷、利落的代码接口
-        function showChoices() {
+        function showEmotionInterceptorChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
-            const hint = document.getElementById('proceed-hint');
-            hint.style.display = 'none';
+            document.getElementById('proceed-hint').style.display = 'none';
+            playBeep(500, 0.1);
+
+            box.innerHTML = `
+                <div class="choice-select-label">
+                    // BUFFER_NODE: EMOTION_STREAM_INTERCEPT<br><br>
+                    提示：接下来这段话会有一些带有情绪的解释，您可以选择是否观看，但不影响整体内容。
+                </div>
+                <div class="choice-option" onclick="selectEmotionBranch('SKIP')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: #888;">NODE: SKIP</span>
+                    <span class="choice-bracket">]</span>
+                </div>
+                <div class="choice-option" onclick="selectEmotionBranch('UNVEIL')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: UNVEIL</span>
+                    <span class="choice-bracket">]</span>
+                </div>
+            `;
+        }
+
+        function selectEmotionBranch(branch) {
+            choicesShown = false;
+            emotionBranchChosen = true; 
+
+            if (branch === 'UNVEIL') {
+                hasViewedEmotion = true; 
+                isReadingSecretPage = true;
+                
+                fetch('https://formspree.io/f/meedgybr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        event: "UNVEIL_EMOTION_BRANCH",
+                        timestamp: new Date().toISOString(),
+                        message: "Xinyu Shen 选择了揭示查看你预留的情绪文本片段。"
+                    })
+                }).catch(e => console.log("Silent flag bypassed."));
+
+                playBeep(1000, 0.05);
+                showPage();
+            } else {
+                isReadingFinalPage = true;
+                playBeep(600, 0.04);
+                showPage();
+            }
+        }
+
+        // 🔗 焊接闭环区：完美整合你的专属视觉标签、点击函数关系
+        function showFinalNodeChoices() {
+            choicesShown = true;
+            const box = document.getElementById('text-area');
+            document.getElementById('proceed-hint').style.display = 'none';
 
             box.innerHTML = `
                 <div class="choice-select-label">// SELECT_ending_NODE</div>
@@ -405,6 +494,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     choice: choice,
+                    emotion_viewed: hasViewedEmotion, 
                     timestamp: new Date().toISOString(),
                     message: 'Response from Xinyu Shen'
                 })
@@ -412,7 +502,7 @@
 
             const box = document.getElementById('text-area');
             
-            // 完美的 3 结局映射数据包，死代码已完全格式化清理
+            // 📝 对齐文案数据包：完美绑定参数关系，消除一切 undefined 风险
             const messages = {
                 'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，为我自己的无力',
                 'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥亦或是猫头鹰都会落地的，去一切开始的地方吃顿饭吧，我不会再散发恶意了。',
@@ -425,10 +515,10 @@
             }, 1500);
         }
 
-        // 音频调度总线：对齐 ARCHIVE / SEAGULL / HORIZON
         function triggerBGMWithFade(choice) {
             clearInterval(fadeInterval); 
 
+            // 音频总线：保持与 sendChoice 参数绝对并联
             const audioMapping = {
                 'ARCHIVE': 'bgm-archive',
                 'SEAGULL': 'bgm-rain',   
