@@ -240,7 +240,7 @@
             "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我想向您学习。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。"
         ];
 
-        // 📝 隐藏分支完美拆页：不仅防拥挤，也为你预留了在两页内各自继续递进情感的写作空间
+        // 📝 隐藏分支拆页
         const secretEmotionPages = [
             "这个月我大概花了很长时间去离开我原来的所谓越痛苦越深刻的舒适圈，我是一个很矛盾且傲慢的人，所以我明白我真的欠您一个非常认真的道歉。\n\n那天我们的真心换真心，但是我没有真的很认真的去理解那段话的意义，我对此非常抱歉。",
             "我之后一定不会散发那些晦暗的东西了，我会尊重这阵自由的风，我很珍惜我们的磁场，希望您能再相信我一次，人之间的关系难免折痕，但是我会承担这份责任，我们的关系即便走完莫比乌斯环，重回起点，回到那个让我们都舒服的瞬间。"
@@ -255,7 +255,7 @@
         // 状态控制机
         let emotionBranchChosen = false; 
         let isReadingSecretPage = false;
-        let secretPageIndex = 0; // 👈 隐藏发言页计数器
+        let secretPageIndex = 0; 
         let isReadingFinalPage = false;
         let hasViewedEmotion = false; 
 
@@ -340,7 +340,7 @@
         function typeChar() {
             let text = "";
             if (isReadingSecretPage) {
-                text = secretEmotionPages[secretPageIndex]; // 依据索引多页抓取
+                text = secretEmotionPages[secretPageIndex]; 
             } else if (isReadingFinalPage) {
                 text = finalPage;
             } else {
@@ -384,20 +384,17 @@
                 return;
             }
 
-            // 正文翻完，强行加载拦截引导
             if (!emotionBranchChosen && currentPage === pages.length - 1 && !isReadingSecretPage && !isReadingFinalPage) {
                 showEmotionInterceptorChoices();
                 return;
             }
 
-            // 🧬 核心控制流微调：处理隐藏页在多页状态下的前滚与出栈
             if (isReadingSecretPage) {
                 if (secretPageIndex < secretEmotionPages.length - 1) {
-                    secretPageIndex++; // 指针下移
+                    secretPageIndex++; 
                     playBeep(900, 0.03);
                     showPage();
                 } else {
-                    // 隐藏多页全面读完，流向黑格尔的收尾
                     isReadingSecretPage = false;
                     isReadingFinalPage = true;
                     playBeep(900, 0.03);
@@ -449,9 +446,8 @@
             if (branch === 'UNVEIL') {
                 hasViewedEmotion = true; 
                 isReadingSecretPage = true;
-                secretPageIndex = 0; // 重置隐藏页起始指针
+                secretPageIndex = 0; 
                 
-                // 即刻在分叉点向 Formspree 异步静默触发解锁邮件
                 fetch('https://formspree.io/f/meedgybr', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -471,6 +467,7 @@
             }
         }
 
+        // 🛠️ 核心修正：完美梳理【视觉排版标签】与【底层发信Key值】的逻辑对齐
         function showFinalNodeChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -480,13 +477,13 @@
                 <div class="choice-select-label">// SELECT_ending_NODE</div>
                 <div class="choice-option" onclick="sendChoice('ARCHIVE')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: #888;">NODE: SEAGULL</span>
+                    <span class="choice-node" style="color: #888;">NODE: ARCHIVE</span>
                     <span class="choice-bracket">]</span>
                     <span class="choice-text">独自承担，火和汽油 // 虚无的符号戏法</span>
                 </div>
                 <div class="choice-option" onclick="sendChoice('SEAGULL')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: ARCHIVE</span>
+                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: SEAGULL</span>
                     <span class="choice-bracket">]</span>
                     <span class="choice-text">重新连接//雨和旧世界</span>
                 </div>
@@ -516,6 +513,8 @@
             }).catch(e => console.log("Form check bypassed."));
 
             const box = document.getElementById('text-area');
+            
+            // 📝 映射重组：ARCHIVE = 承担/无力； SEAGULL = 海鸥落地/吃饭/不再散发恶意； HORIZON = 重逢
             const messages = {
                 'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，为我自己的无力',
                 'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥亦或是猫头鹰都会落地的，去一切开始的地方吃顿饭吧，我不会再散发恶意了。',
@@ -531,6 +530,7 @@
         function triggerBGMWithFade(choice) {
             clearInterval(fadeInterval); 
 
+            // 🎵 音频总线驱动校准：SEAGULL（雨和旧世界）精准触发 bgm-rain 轨道
             const audioMapping = {
                 'ARCHIVE': 'bgm-archive',
                 'SEAGULL': 'bgm-rain',   
