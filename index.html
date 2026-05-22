@@ -149,9 +149,9 @@
         }
 
         .end-message {
-            color: var(--s4u-magenta);
-            font-size: 16px;
-            line-height: 2.5;
+            color: #232323;
+            font-size: 18px;
+            line-height: 2.2;
             margin-top: 20px;
             white-space: pre-wrap;
         }
@@ -163,6 +163,13 @@
             letter-spacing: 1px;
         }
 
+        #audio-panel {
+            position: fixed; top: 15px; right: 15px;
+            font-family: monospace; font-size: 11px;
+            color: #666; z-index: 9999;
+            letter-spacing: 1px;
+        }
+
         @keyframes blink { 50% { opacity: 0; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -170,6 +177,14 @@
 <body>
 
     <div class="bg-overlay"></div>
+
+    <div id="audio-panel">
+        [ AUDIO_BUS // STATUS: <span id="audio-status" style="color: var(--s4u-cyan);">READY</span> ]
+    </div>
+
+    <audio id="bgm-archive" src="./audio/archive.mp3" loop></audio>
+    <audio id="bgm-rain" src="./audio/rain.mp3" loop></audio>
+    <audio id="bgm-horizon" src="./audio/horizon.mp3" loop></audio>
 
     <div id="launcher" onclick="attemptStart()">
         <div class="loading-title">INITIALIZING_LIFE_RECONSTRUCTION</div>
@@ -227,7 +242,10 @@
         let timer = null;
         let choicesShown = false;
 
-        // 初始化 Audio 容器（懒加载调用，避免浏览器策略拦截干扰异步进程）
+        // 全量音频渐变管理器状态变量
+        let currentAudio = null;
+        let fadeInterval = null;
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         function playBeep(freq = 800, duration = 0.01) {
@@ -245,7 +263,23 @@
             } catch(e) {}
         }
 
-        // 步进式加载器：无死循环干扰防御
+        // 模拟城市朋克风格低频环境冲击效果音
+        function playPunchThud() {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } catch(e) {}
+        }
+
         function runLoader() {
             if (progress < 100) {
                 progress += 4;
@@ -259,10 +293,8 @@
         }
         runLoader();
 
-        // 修复状态控制机：玩家中途乱点时强制拉满进度条，绝不卡死
         function attemptStart() {
             if (!canStart) {
-                // 如果还未加载完就触发点击，强制瞬间充满并激活下一步，这很加速主义
                 progress = 100;
                 document.getElementById('bar').style.width = "100%";
                 canStart = true;
@@ -319,7 +351,7 @@
         }
 
         function handleBoxClick() {
-            if (choicesShown) return; // 选项展出后锁死对话框点击
+            if (choicesShown) return;
 
             if (isTyping) {
                 completePage();
@@ -335,7 +367,7 @@
             }
         }
 
-        // 唤醒后端数据对赌选择界面
+        // 完美焊接 S4U 结局外壳与底层 Key 值的动态交互渲染区
         function showChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -343,32 +375,34 @@
             hint.style.display = 'none';
 
             box.innerHTML = `
-                <div class="choice-select-label">// SELECT_RESPONSE_NODE</div>
+                <div class="choice-select-label">// SELECT_RESPONSE_NODE (S4U_BRANCH_SELECTION)</div>
                 <div class="choice-option" onclick="sendChoice('ARCHIVE')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node">NODE: ARCHIVE</span>
+                    <span class="choice-node">BAD END: MAGICIAN</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">归档此存档</span>
+                    <span class="choice-text">独自承担 // 虚无的魔术师戏法</span>
                 </div>
-                <div class="choice-option" onclick="sendChoice('RECONNECT')">
+                <div class="choice-option" onclick="sendChoice('RAIN')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node">NODE: RECONNECT</span>
+                    <span class="choice-node" style="color: #888;">NORMAL END: RAIN</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">解除归档</span>
+                    <span class="choice-text">普通朋友 // 降落在星水街的冷冻隐忍之雨</span>
                 </div>
                 <div class="choice-option" onclick="sendChoice('HORIZON')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: var(--s4u-cyan)">NODE: HORIZON</span>
+                    <span class="choice-node" style="color: var(--s4u-cyan)">TRUE END: NEW_JOURNEY</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">海的对边，时间的尽头，朋友</span>
+                    <span class="choice-text">和伙伴们一起 // 海的对边，时间的尽头，朋友</span>
                 </div>
             `;
             playBeep(400, 0.15);
         }
 
-        // Formspree 异步数据流拦截发射系统
         function sendChoice(choice) {
-            playBeep(1000, 0.05);
+            playPunchThud(); // 触发重低音重拳音效
+
+            // 执行带淡入淡出的音频总线动态切换
+            triggerBGMWithFade(choice);
 
             fetch('https://formspree.io/f/meedgybr', {
                 method: 'POST',
@@ -378,12 +412,15 @@
                     timestamp: new Date().toISOString(),
                     message: 'Response from Xinyu Shen'
                 })
-            });
+            }).catch(e => console.log("Form check bypassed."));
 
             const box = document.getElementById('text-area');
+            
+            // 精准映射你截图里的原生情感回执，完美杜绝 undefined 崩溃
             const messages = {
                 'ARCHIVE': '// 存档已封存。\n// 感谢您曾带我走出房间，祝您未来一切顺利',
                 'RECONNECT': '// 连接请求已记录。\n// 我们的猫头鹰会找到落点的，去一切开始的地方吃顿饭吧！',
+                'RAIN': '// 普通朋友边界生效。\n// 星水街落下了漫长、隐忍的冷冻之雨。',
                 'HORIZON': '// 海的对边，时间的尽头。\n// 和我一起，和朋友们一起，到达新旅程'
             };
 
@@ -391,6 +428,67 @@
             setTimeout(() => {
                 box.innerHTML += `<div class="process-complete">[ PROCESS_COMPLETE ]</div>`;
             }, 1500);
+        }
+
+        // 核心硬核控制流：GitHub 相对路径兼容 & 平滑淡入淡出（Fade In / Out）引擎
+        function triggerBGMWithFade(choice) {
+            clearInterval(fadeInterval); // 掐断正在执行的音量缓动
+
+            const audioMapping = {
+                'ARCHIVE': 'bgm-archive',
+                'RAIN': 'bgm-rain',
+                'HORIZON': 'bgm-horizon'
+            };
+
+            const targetAudioId = audioMapping[choice];
+            const nextAudio = document.getElementById(targetAudioId);
+            const statusIndicator = document.getElementById('audio-status');
+
+            // 1. 优雅淡出：如果当前有轨道在运行，以 30ms 的步长平滑递减至静音
+            if (currentAudio && currentAudio !== nextAudio) {
+                let fadeOutAudio = currentAudio;
+                let fadeOutStep = setInterval(() => {
+                    if (fadeOutAudio.volume > 0.02) {
+                        fadeOutAudio.volume -= 0.02;
+                    } else {
+                        fadeOutAudio.volume = 0;
+                        fadeOutAudio.pause();
+                        clearInterval(fadeOutStep);
+                    }
+                }, 30);
+            }
+
+            // 2. 完美淡入：将目标轨道音量归零并唤醒，在 1 秒内均匀缓动至最大安全声能（0.4）
+            currentAudio = nextAudio;
+
+            if (currentAudio) {
+                currentAudio.volume = 0;
+                
+                currentAudio.play().then(() => {
+                    if (statusIndicator) {
+                        statusIndicator.innerText = `STREAMING_${choice}_AUDIO`;
+                        statusIndicator.style.color = '#00ff66';
+                    }
+
+                    const maxVolume = 0.4;
+                    const fadeInDuration = 1000; // 淡入总长 1000ms
+                    const intervalTime = 40; 
+                    const volumeStep = maxVolume / (fadeInDuration / intervalTime);
+
+                    fadeInterval = setInterval(() => {
+                        if (currentAudio.volume < maxVolume - volumeStep) {
+                            currentAudio.volume += volumeStep;
+                        } else {
+                            currentAudio.volume = maxVolume; // 锁定极限电平值
+                            clearInterval(fadeInterval);
+                        }
+                    }, intervalTime);
+
+                }).catch(error => {
+                    console.log("Audio contextual trigger pending:", error);
+                    if (statusIndicator) statusIndicator.innerText = "PLAYBACK_BLOCKED";
+                });
+            }
         }
     </script>
 </body>
