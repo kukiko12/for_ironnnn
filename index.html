@@ -122,7 +122,7 @@
         /* 选项样式 */
         .choice-option {
             padding: 18px 20px;
-            margin: 12px 0;
+            margin: 15px 0;
             border: 1px solid #ccc;
             border-left: 4px solid var(--s4u-magenta);
             cursor: pointer;
@@ -138,11 +138,10 @@
             transform: translateX(4px);
         }
         .choice-bracket { color: #999; font-size: 14px; }
-        .choice-node { color: var(--s4u-magenta); font-size: 13px; letter-spacing: 1px; min-width: 160px; }
-        .choice-text { color: #333; font-size: 16px; margin-left: 8px; }
+        .choice-node { font-size: 15px; letter-spacing: 1px; min-width: 160px; font-weight: bold; }
 
         .choice-select-label {
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             color: #888;
             font-size: 13px;
             letter-spacing: 2px;
@@ -150,7 +149,7 @@
 
         .end-message {
             color: #232323;
-            font-size: 18px;
+            font-size: 19px;
             line-height: 2.2;
             margin-top: 20px;
             white-space: pre-wrap;
@@ -263,7 +262,6 @@
             } catch(e) {}
         }
 
-        // 模拟城市朋克风格低频环境冲击效果音
         function playPunchThud() {
             try {
                 const osc = audioCtx.createOscillator();
@@ -367,7 +365,7 @@
             }
         }
 
-        // 完美焊接 S4U 结局外壳与底层 Key 值的动态交互渲染区
+        // 纯净版交互界面：彻底剥离杂音与剧透，只有最冷酷、利落的代码接口
         function showChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -375,34 +373,29 @@
             hint.style.display = 'none';
 
             box.innerHTML = `
-                <div class="choice-select-label">// SELECT_RESPONSE_NODE (S4U_BRANCH_SELECTION)</div>
+                <div class="choice-select-label">// SELECT_RESPONSE_NODE</div>
                 <div class="choice-option" onclick="sendChoice('ARCHIVE')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node">BAD END: MAGICIAN</span>
+                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: ARCHIVE</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">独自承担 // 虚无的魔术师戏法</span>
                 </div>
-                <div class="choice-option" onclick="sendChoice('RAIN')">
+                <div class="choice-option" onclick="sendChoice('SEAGULL')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: #888;">NORMAL END: RAIN</span>
+                    <span class="choice-node" style="color: #888;">NODE: SEAGULL</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">普通朋友 // 降落在星水街的冷冻隐忍之雨</span>
                 </div>
                 <div class="choice-option" onclick="sendChoice('HORIZON')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: var(--s4u-cyan)">TRUE END: NEW_JOURNEY</span>
+                    <span class="choice-node" style="color: var(--s4u-cyan);">NODE: HORIZON</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">和伙伴们一起 // 海的对边，时间的尽头，朋友</span>
                 </div>
             `;
             playBeep(400, 0.15);
         }
 
         function sendChoice(choice) {
-            playPunchThud(); // 触发重低音重拳音效
-
-            // 执行带淡入淡出的音频总线动态切换
-            triggerBGMWithFade(choice);
+            playPunchThud(); 
+            triggerBGMWithFade(choice); 
 
             fetch('https://formspree.io/f/meedgybr', {
                 method: 'POST',
@@ -416,12 +409,11 @@
 
             const box = document.getElementById('text-area');
             
-            // 精准映射你截图里的原生情感回执，完美杜绝 undefined 崩溃
+            // 完美的 3 结局映射数据包，死代码已完全格式化清理
             const messages = {
-                'ARCHIVE': '// 存档已封存。\n// 感谢您曾带我走出房间，祝您未来一切顺利',
-                'RECONNECT': '// 连接请求已记录。\n// 我们的猫头鹰会找到落点的，去一切开始的地方吃顿饭吧！',
-                'RAIN': '// 普通朋友边界生效。\n// 星水街落下了漫长、隐忍的冷冻之雨。',
-                'HORIZON': '// 海的对边，时间的尽头。\n// 和我一起，和朋友们一起，到达新旅程'
+                'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利。',
+                'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥亦或是猫头鹰都会落地的，去一切开始的地方吃顿饭吧，我不会再散发恶意了。',
+                'HORIZON': '// STATUS: NEW_JOURNEY_INITIATED.\n// 和我一起，和朋友们一起去新旅程，我们会在没有黑暗的欧洲或者香港重逢。'
             };
 
             box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
@@ -430,21 +422,20 @@
             }, 1500);
         }
 
-        // 核心硬核控制流：GitHub 相对路径兼容 & 平滑淡入淡出（Fade In / Out）引擎
+        // 音频调度总线：对齐 ARCHIVE / SEAGULL / HORIZON
         function triggerBGMWithFade(choice) {
-            clearInterval(fadeInterval); // 掐断正在执行的音量缓动
+            clearInterval(fadeInterval); 
 
             const audioMapping = {
                 'ARCHIVE': 'bgm-archive',
-                'RAIN': 'bgm-rain',
-                'HORIZON': 'bgm-horizon'
+                'SEAGULL': 'bgm-rain',   
+                'HORIZON': 'bgm-horizon' 
             };
 
             const targetAudioId = audioMapping[choice];
             const nextAudio = document.getElementById(targetAudioId);
             const statusIndicator = document.getElementById('audio-status');
 
-            // 1. 优雅淡出：如果当前有轨道在运行，以 30ms 的步长平滑递减至静音
             if (currentAudio && currentAudio !== nextAudio) {
                 let fadeOutAudio = currentAudio;
                 let fadeOutStep = setInterval(() => {
@@ -458,7 +449,6 @@
                 }, 30);
             }
 
-            // 2. 完美淡入：将目标轨道音量归零并唤醒，在 1 秒内均匀缓动至最大安全声能（0.4）
             currentAudio = nextAudio;
 
             if (currentAudio) {
@@ -471,7 +461,7 @@
                     }
 
                     const maxVolume = 0.4;
-                    const fadeInDuration = 1000; // 淡入总长 1000ms
+                    const fadeInDuration = 1000; 
                     const intervalTime = 40; 
                     const volumeStep = maxVolume / (fadeInDuration / intervalTime);
 
@@ -479,13 +469,12 @@
                         if (currentAudio.volume < maxVolume - volumeStep) {
                             currentAudio.volume += volumeStep;
                         } else {
-                            currentAudio.volume = maxVolume; // 锁定极限电平值
+                            currentAudio.volume = maxVolume; 
                             clearInterval(fadeInterval);
                         }
                     }, intervalTime);
 
                 }).catch(error => {
-                    console.log("Audio contextual trigger pending:", error);
                     if (statusIndicator) statusIndicator.innerText = "PLAYBACK_BLOCKED";
                 });
             }
