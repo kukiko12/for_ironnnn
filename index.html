@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,8 +17,8 @@
         body, html {
             margin: 0; padding: 0; height: 100%;
             background-color: #e8e4d8;
-            background-image: radial-gradient(rgba(0,0,0,0.15) 1px, transparent 0), url('bg.jpg'); 
-            background-size: 4px 4px, cover;
+            background-image: radial-gradient(rgba(0,0,0,0.15) 1px, transparent 0);
+            background-size: 4px 4px;
             background-position: center;
             background-attachment: fixed;
             image-rendering: pixelated;
@@ -31,13 +31,13 @@
 
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(12, 10, 15, 0.45); 
+            background: rgba(12, 10, 15, 0.45);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             z-index: 1;
         }
 
-        /* --- 启动页 --- */
+        /* 启动页 */
         #launcher {
             position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
             background: #f5f2e8; display: flex; flex-direction: column;
@@ -46,7 +46,7 @@
         }
 
         .loading-title {
-            font-size: 28px; color: #222; letter-spacing: 4px;
+            font-size: 24px; color: #222; letter-spacing: 4px;
             margin-bottom: 40px; text-align: center; font-weight: bold;
             text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
         }
@@ -56,9 +56,9 @@
 
         #start-prompt { margin-top: 50px; font-size: 18px; color: var(--s4u-magenta); display: none; animation: blink 1.2s infinite; font-weight: bold; }
 
-        /* --- 主展示区 --- */
-        #stage { 
-            display: none; width: 92%; max-width: 800px; 
+        /* 主展示区 */
+        #stage {
+            display: none; width: 92%; max-width: 800px;
             flex-direction: column; gap: 15px; position: relative; z-index: 10;
             animation: fadeIn 0.6s ease;
         }
@@ -67,15 +67,10 @@
         .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 3px #000; opacity: 0.85; }
         .node pre { margin: 0; line-height: 1.1; margin-bottom: 5px; font-family: monospace; font-weight: bold; }
 
-        /* --- 褶皱信纸容器 --- */
+        /* 对话框 */
         .dialogue-box {
             position: relative;
             background: var(--paper-color);
-            background-image: 
-                linear-gradient(135deg, rgba(0,0,0,0.015) 25%, transparent 25%), 
-                linear-gradient(225deg, rgba(0,0,0,0.015) 25%, transparent 25%),
-                linear-gradient(165deg, transparent 45%, rgba(0,0,0,0.02) 48%, rgba(0,0,0,0.04) 50%, transparent 52%);
-            background-size: 100% 100%;
             border: 2px solid #cbd2d6;
             border-left: 12px solid var(--s4u-magenta);
             border-right: 12px solid var(--s4u-cyan);
@@ -95,18 +90,17 @@
             box-shadow: 2px 2px 0px #000;
         }
 
-        #text-area { 
-            font-size: 19px; line-height: 2.4; color: #232323; 
+        #text-area {
+            font-size: 19px; line-height: 2.4; color: #232323;
             white-space: pre-wrap; letter-spacing: 0.05em;
             word-break: break-all;
         }
 
-        /* --- 严格规范的代码化底栏 --- */
         .audit-footer {
-            background: var(--bg-dark); 
-            color: #b5cea8; 
+            background: var(--bg-dark);
+            color: #b5cea8;
             padding: 20px 30px;
-            font-family: 'Consolas', 'Courier New', monospace; 
+            font-family: 'Consolas', 'Courier New', monospace;
             font-size: 12px;
             text-align: left;
             line-height: 1.6;
@@ -118,12 +112,54 @@
         .code-type { color: #4ec9b0; }
         .code-var { color: #9cdcfe; }
         .code-string { color: #ce9178; }
-        .code-comment { color: #6a9955; font-style: italic; }
 
-        .click-proceed { 
-            position: absolute; bottom: 25px; right: 35px; 
-            font-size: 12px; color: var(--s4u-magenta); 
-            font-weight: bold; animation: blink 1s infinite; 
+        .click-proceed {
+            position: absolute; bottom: 25px; right: 35px;
+            font-size: 12px; color: var(--s4u-magenta);
+            font-weight: bold; animation: blink 1s infinite;
+        }
+
+        /* 选项样式 */
+        .choice-option {
+            padding: 18px 20px;
+            margin: 12px 0;
+            border: 1px solid #ccc;
+            border-left: 4px solid var(--s4u-magenta);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: rgba(255,255,255,0.5);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .choice-option:hover {
+            background: rgba(255, 0, 85, 0.08);
+            border-left-color: var(--s4u-cyan);
+            transform: translateX(4px);
+        }
+        .choice-bracket { color: #999; font-size: 14px; }
+        .choice-node { color: var(--s4u-magenta); font-size: 13px; letter-spacing: 1px; min-width: 160px; }
+        .choice-text { color: #333; font-size: 16px; margin-left: 8px; }
+
+        .choice-select-label {
+            margin-bottom: 30px;
+            color: #888;
+            font-size: 13px;
+            letter-spacing: 2px;
+        }
+
+        .end-message {
+            color: var(--s4u-magenta);
+            font-size: 16px;
+            line-height: 2.5;
+            margin-top: 20px;
+        }
+
+        .process-complete {
+            color: #888;
+            font-size: 12px;
+            margin-top: 30px;
+            letter-spacing: 1px;
         }
 
         @keyframes blink { 50% { opacity: 0; } }
@@ -150,7 +186,7 @@
   " "</pre>[Node: Refac]</div>
             <div class="node"><pre>   ___| |_
   |  _   _|
- <span style="color:orange;">[=]</span>| o |
+ [=]| o |
   |_____|</pre>[Node: SeaGull]</div>
             <div class="node" style="color: var(--s4u-magenta);"><pre>  /\_/\
  ( o.o )
@@ -162,7 +198,6 @@
             <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
         </div>
 
-        <!-- 修正为标准伪代码/极客规范的日志区 -->
         <div class="audit-footer">
             <span class="code-keyword">import</span> { <span class="code-var">reconstruct</span> } <span class="code-keyword">from</span> <span class="code-string">"life-framework"</span>;<br>
             <span class="code-keyword">const</span> <span class="code-var">runtime</span> = <span class="code-keyword">new</span> <span class="code-type">AuditExecutor</span>({<br>
@@ -182,17 +217,17 @@
             "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性。拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。",
             "现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受。",
             "我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
-            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
+            "所以我在错误的时机做了那件事情，所以我回说"世界对我一直是残酷的"。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
             "本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
-            "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。",
+            "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得"理解世界，享受世界，挑战世界是不可能三角"。",
             "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。",
             "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies."
         ];
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
         let timer = null;
+        let choicesShown = false;
 
-        // 利用 Web Audio API 实时生成复古打字机/电子音效，无需外部音频源
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(freq = 800, duration = 0.01) {
             try {
@@ -237,7 +272,7 @@
 
         function showPage() {
             if (currentPage >= pages.length) return;
-            isTyping = true; 
+            isTyping = true;
             charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
             document.getElementById('proceed-hint').style.display = "none";
@@ -249,7 +284,7 @@
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
-                if (charIndex % 2 === 0) playBeep(1200, 0.008); // 间歇性输出低音量打字音
+                if (charIndex % 2 === 0) playBeep(1200, 0.008);
                 timer = setTimeout(typeChar, 50);
             } else {
                 completePage();
@@ -262,30 +297,86 @@
             document.getElementById('text-area').innerHTML = pages[currentPage];
             const hint = document.getElementById('proceed-hint');
             if (currentPage === pages.length - 1) {
-                hint.innerHTML = "[ ARCHIVE_CLOSED ]";
+                hint.innerHTML = "PRESS_TO_CONTINUE ▼";
                 hint.style.color = "var(--s4u-cyan)";
             } else {
                 hint.innerHTML = "PRESS_TO_CONTINUE ▼";
+                hint.style.color = "var(--s4u-magenta)";
             }
             hint.style.display = "block";
         }
 
         function handleBoxClick() {
+            if (choicesShown) return;
+
             if (isTyping) {
-                // 如果正在打字，点击立即显示整页文本
                 completePage();
                 playBeep(600, 0.05);
             } else {
-                // 如果文本已显示完毕，点击进入下一页
                 if (currentPage < pages.length - 1) {
                     currentPage++;
                     playBeep(900, 0.03);
                     showPage();
                 } else {
-                    // 最后一页点击触发结束震动反馈
-                    playBeep(300, 0.2);
+                    showChoices();
                 }
             }
+        }
+
+        function showChoices() {
+            choicesShown = true;
+            const box = document.getElementById('text-area');
+            const hint = document.getElementById('proceed-hint');
+            hint.style.display = 'none';
+
+            box.innerHTML = `
+                <div class="choice-select-label">// SELECT_RESPONSE_NODE</div>
+                <div class="choice-option" onclick="sendChoice('ARCHIVE')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node">NODE: ARCHIVE</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">归档此存档</span>
+                </div>
+                <div class="choice-option" onclick="sendChoice('RECONNECT')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node">NODE: RECONNECT</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">解除归档</span>
+                </div>
+                <div class="choice-option" onclick="sendChoice('HORIZON')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: var(--s4u-cyan)">NODE: HORIZON</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">海的对边，时间的尽头，朋友</span>
+                </div>
+            `;
+            playBeep(400, 0.15);
+        }
+
+        function sendChoice(choice) {
+            playBeep(1000, 0.05);
+
+            fetch('https://formspree.io/f/meedgybr', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    choice: choice,
+                    timestamp: new Date().toISOString(),
+                    message: 'Response from Xinyu Shen'
+                })
+            });
+
+            const box = document.getElementById('text-area');
+            const messages = {
+                'ARCHIVE': '// 存档已封存。\n// 感谢你走到这里。',
+                'RECONNECT': '// 连接请求已记录。\n// 猫头鹰会找到落点的。',
+                'HORIZON': '// 海的对边，时间的尽头。\n// 朋友。'
+            };
+
+            box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
+            setTimeout(() => {
+                box.innerHTML += `<div class="process-complete">[ PROCESS_COMPLETE ]</div>`;
+            }, 1500);
         }
     </script>
 </body>
