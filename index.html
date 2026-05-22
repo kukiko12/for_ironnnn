@@ -373,24 +373,24 @@
             hint.style.display = 'none';
 
             box.innerHTML = `
-                <div class="choice-select-label">// SELECT_RESPONSE_NODE</div>
+                <div class="choice-select-label">// SELECT_ending_NODE</div>
                 <div class="choice-option" onclick="sendChoice('ARCHIVE')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: ARCHIVE</span>
+                    <span class="choice-node" style="color: #888;">NODE: SEAGULL</span>
                     <span class="choice-bracket">]</span>
                     <span class="choice-text">独自承担，火和汽油 // 虚无的符号戏法</span>
                 </div>
                 <div class="choice-option" onclick="sendChoice('SEAGULL')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: #888;">NODE: SEAGULL</span>
+                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: ARCHIVE</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">重新连接，雨和旧世界</span>
+                    <span class="choice-text">重新连接//雨和旧世界</span>
                 </div>
                 <div class="choice-option" onclick="sendChoice('HORIZON')">
                     <span class="choice-bracket">[</span>
                     <span class="choice-node" style="color: var(--s4u-cyan);">NODE: HORIZON</span>
                     <span class="choice-bracket">]</span>
-                    <span class="choice-text">海的那边，世界的尽头，明年的秋天</span>
+                    <span class="choice-text">海的那边，世界的尽头//过去的未来</span>
                 </div>
             `;
             playBeep(400, 0.15);
@@ -414,9 +414,9 @@
             
             // 完美的 3 结局映射数据包，死代码已完全格式化清理
             const messages = {
-                'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利。',
+                'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，为我自己的无力',
                 'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥亦或是猫头鹰都会落地的，去一切开始的地方吃顿饭吧，我不会再散发恶意了。',
-                'HORIZON': '// STATUS: NEW_JOURNEY_INITIATED.\n// 和我一起，和朋友们一起去新旅程，我们会在没有黑暗的欧洲或者香港重逢。'
+                'HORIZON': '// STATUS: NEW_JOURNEY_INITIATED.\n// 和我一起，和朋友们一起去新旅程，我们会在没有黑暗的地方重逢。'
             };
 
             box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
