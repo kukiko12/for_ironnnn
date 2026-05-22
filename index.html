@@ -153,6 +153,7 @@
             font-size: 16px;
             line-height: 2.5;
             margin-top: 20px;
+            white-space: pre-wrap;
         }
 
         .process-complete {
@@ -170,14 +171,12 @@
 
     <div class="bg-overlay"></div>
 
-    <!-- 启动页 -->
     <div id="launcher" onclick="attemptStart()">
         <div class="loading-title">INITIALIZING_LIFE_RECONSTRUCTION</div>
         <div class="progress-bar"><div class="progress-fill" id="bar"></div></div>
         <div id="start-prompt">[ CLICK_TO_PROCEED ]</div>
     </div>
 
-    <!-- 主舞台 -->
     <div id="stage">
         <div class="nodes-header">
             <div class="node"><pre>  ,___,
@@ -201,9 +200,9 @@
         <div class="audit-footer">
             <span class="code-keyword">import</span> { <span class="code-var">reconstruct</span> } <span class="code-keyword">from</span> <span class="code-string">"life-framework"</span>;<br>
             <span class="code-keyword">const</span> <span class="code-var">runtime</span> = <span class="code-keyword">new</span> <span class="code-type">AuditExecutor</span>({<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;executor: <span class="code-string">"Junxian Zhou"</span>,<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;contributor: <span class="code-string">"Xinyu Shen"</span>,<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;status: <span class="code-type">Status</span>.<span class="code-var">RELATIONSHIP_RECONSTRUCTION_ACTIVE</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;executor: <span class="code-string">"Junxian Zhou"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;contributor: <span class="code-string">"Xinyu Shen"</span>,<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;status: <span class="code-type">Status</span>.<span class="code-var">RELATIONSHIP_RECONSTRUCTION_ACTIVE</span><br>
             });<br>
             <span class="code-keyword">export default</span> <span class="code-var">runtime</span>.<span class="code-var">execute</span>(() => <span class="code-string">"friends_and_peace"</span>);
         </div>
@@ -217,9 +216,9 @@
             "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性。拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。",
             "现在在我被陶片放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受。",
             "我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方。",
-            "所以我在错误的时机做了那件事情，所以我回说"世界对我一直是残酷的"。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
+            "所以我在错误的时机做了那件事情，所以我回说“世界对我一直是残酷的”。但其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了。",
             "本质上我还是在符号化痛苦并将之作为生命的燃料。但是这显然不是长久之计，我看到了我的病灶。接下来的路我会一个人先走一段，去办好该办的事。",
-            "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得"理解世界，享受世界，挑战世界是不可能三角"。",
+            "不过我仍然觉得您是一个有意思的人。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。",
             "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我可能会没那么极端。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。",
             "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。\n\nMy sincerest apologies."
         ];
@@ -228,7 +227,9 @@
         let timer = null;
         let choicesShown = false;
 
+        // 初始化 Audio 容器（懒加载调用，避免浏览器策略拦截干扰异步进程）
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
         function playBeep(freq = 800, duration = 0.01) {
             try {
                 const osc = audioCtx.createOscillator();
@@ -244,6 +245,7 @@
             } catch(e) {}
         }
 
+        // 步进式加载器：无死循环干扰防御
         function runLoader() {
             if (progress < 100) {
                 progress += 4;
@@ -257,7 +259,17 @@
         }
         runLoader();
 
+        // 修复状态控制机：玩家中途乱点时强制拉满进度条，绝不卡死
         function attemptStart() {
+            if (!canStart) {
+                // 如果还未加载完就触发点击，强制瞬间充满并激活下一步，这很加速主义
+                progress = 100;
+                document.getElementById('bar').style.width = "100%";
+                canStart = true;
+                document.getElementById('start-prompt').style.display = 'block';
+                return; 
+            }
+
             if (canStart) {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 playBeep(400, 0.1);
@@ -284,7 +296,7 @@
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
-                if (charIndex % 2 === 0) playBeep(1200, 0.008);
+                if (charIndex % 2 === 0) playBeep(1200, 0.008); 
                 timer = setTimeout(typeChar, 50);
             } else {
                 completePage();
@@ -307,7 +319,7 @@
         }
 
         function handleBoxClick() {
-            if (choicesShown) return;
+            if (choicesShown) return; // 选项展出后锁死对话框点击
 
             if (isTyping) {
                 completePage();
@@ -323,6 +335,7 @@
             }
         }
 
+        // 唤醒后端数据对赌选择界面
         function showChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -353,6 +366,7 @@
             playBeep(400, 0.15);
         }
 
+        // Formspree 异步数据流拦截发射系统
         function sendChoice(choice) {
             playBeep(1000, 0.05);
 
