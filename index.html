@@ -16,7 +16,6 @@
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            /* 🔗 接口1：主网页背景图自适应平铺 */
             background-image: url('./bk.jpg');
             background-size: cover;
             background-position: center;
@@ -38,10 +37,9 @@
             z-index: 1;
         }
 
-        /* 🌆 启动页（已注入动态 GIF 背景接口） */
+        /* 启动页 */
         #launcher {
             position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
-            /* 🔗 接口2：启动页面专属动态 GIF 路径 */
             background-image: linear-gradient(rgba(245, 242, 232, 0.85), rgba(245, 242, 232, 0.85)), url('./launcher_bk.gif');
             background-size: cover;
             background-position: center;
@@ -62,60 +60,69 @@
 
         #start-prompt { margin-top: 50px; font-size: 18px; color: var(--s4u-magenta); display: none; animation: blink 1.2s infinite; font-weight: bold; z-index: 2; }
 
-        /* 🛠️ 主展示画布优化：优化顶部外边距与弹性高度，给左上角和小动物区挪出安全显示声场 */
+        /* 主展示画布 */
         #stage {
             display: none; 
             width: 94%; 
             max-width: 820px;
-            max-height: 96vh; /* 避免画布被顶到底部溢出 */
+            max-height: 96vh; 
             flex-direction: column; 
             gap: 12px; 
             position: relative; 
             z-index: 10;
             animation: fadeIn 0.6s ease;
             box-sizing: border-box;
-            padding-top: 15px; /* 给头部节点挤出顶部绝对空间 */
+            padding-top: 25px; /* 稍微拉开一点顶部安全间距，防截断 */
         }
 
-        /* 🔧 头部区域微调：降噪处理，确保 ASCII 小动物和节点文本横向排列绝不挤压 */
         .nodes-header { 
             display: flex; 
             justify-content: space-between; 
             padding: 0 10px; 
             margin-bottom: 2px;
-            flex-shrink: 0; /* 强制拒绝在纵向高度不足时缩水 */
+            flex-shrink: 0; 
         }
         .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 3px #000; opacity: 0.85; }
         .node pre { margin: 0; line-height: 1.2; margin-bottom: 4px; font-family: monospace; font-weight: bold; }
 
-        /* 对话框 */
+        /* 📦 对话框外层包裹器：为了完美解决 overflow: hidden 剪裁黄色标签的致命 Bug */
+        .dialogue-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        /* 🔧 重新设计的黄色系统标签：彻底解离，拥有独立且最高的层级渲染 */
+        .dialogue-tag {
+            position: absolute; 
+            top: -11px; 
+            left: 30px;
+            background: var(--s4u-yellow); 
+            color: #000;
+            font-size: 11px; 
+            font-weight: 900; 
+            padding: 2px 10px; 
+            border: 1px solid #000;
+            box-shadow: 2px 2px 0px #000;
+            z-index: 99; /* 确保骑在最上层 */
+        }
+
         .dialogue-box {
             position: relative;
             background: var(--paper-color);
             border: 2px solid #cbd2d6;
             border-left: 12px solid var(--s4u-magenta);
             border-right: 12px solid var(--s4u-cyan);
-            padding: 50px 55px 70px 55px; /* 微调内边距，增加视窗内的排版呼吸深度 */
+            padding: 55px 55px 70px 55px; 
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 100%; 
             min-height: 460px; 
             box-sizing: border-box;
             cursor: pointer;
             transition: transform 0.1s ease;
-            overflow: hidden;
+            overflow: hidden; /* 继续安全裁剪内部的 GIF 挂件 */
         }
         .dialogue-box:active { transform: scale(0.995); }
 
-        .dialogue-box::before {
-            content: "SYSTEM // DE_SYMBOLIZATION_LOG";
-            position: absolute; top: -11px; left: 30px;
-            background: var(--s4u-yellow); color: #000;
-            font-size: 11px; font-weight: 900; padding: 2px 10px; border: 1px solid #000;
-            box-shadow: 2px 2px 0px #000;
-            z-index: 3;
-        }
-
-        /* 🔗 接口3：主视窗内常驻的小型极客动态 GIF 挂件 */
         .stage-gif-widget {
             position: absolute;
             bottom: 20px;
@@ -146,7 +153,7 @@
             line-height: 1.6;
             border: 1px solid #333;
             box-shadow: 10px 10px 0px rgba(0,0,0,0.15);
-            flex-shrink: 0; /* 保护底层固件区域不被压缩 */
+            flex-shrink: 0; 
         }
 
         .code-keyword { color: #569cd6; }
@@ -253,10 +260,13 @@
   > ^ <</pre>[Node: Spec]</div>
         </div>
 
-        <div class="dialogue-box" onclick="handleBoxClick()">
-            <div class="stage-gif-widget"></div>
-            <div id="text-area"></div>
-            <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
+        <div class="dialogue-wrapper">
+            <div class="dialogue-tag">SYSTEM // DE_SYMBOLIZATION_LOG</div>
+            <div class="dialogue-box" onclick="handleBoxClick()">
+                <div class="stage-gif-widget"></div>
+                <div id="text-area"></div>
+                <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
+            </div>
         </div>
 
         <div class="audit-footer">
@@ -468,7 +478,7 @@
             box.innerHTML = `
                 <div class="choice-select-label">
                     // BUFFER_NODE: EMOTION_STREAM_INTERCEPT<br><br>
-                    提示：接下来这段话会有一些掺杂个人情感的解释，您可以选择是否观看，但不会影响整体内容，这个网站就是用于道歉和感谢的。
+                    提示：接下来这段话会有一些掺杂个人情感的解释，您可以选择是否观看，但不影响整体内容，这个网站就是用于道歉和感谢的。
                 </div>
                 <div class="choice-option" onclick="selectEmotionBranch('SKIP')">
                     <span class="choice-bracket">[</span>
