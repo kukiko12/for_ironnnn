@@ -16,7 +16,8 @@
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            background-image: url('./bk.jpg');
+            /* 🔗 核心修改：已全量为你接入独立的 bg.jpg 背景图接口 */
+            background-image: url('./bg.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -72,7 +73,7 @@
             z-index: 10;
             animation: fadeIn 0.6s ease;
             box-sizing: border-box;
-            padding-top: 25px; /* 稍微拉开一点顶部安全间距，防截断 */
+            padding-top: 25px; 
         }
 
         .nodes-header { 
@@ -85,13 +86,13 @@
         .node { text-align: center; color: #fff; font-size: 11px; text-shadow: 1px 1px 3px #000; opacity: 0.85; }
         .node pre { margin: 0; line-height: 1.2; margin-bottom: 4px; font-family: monospace; font-weight: bold; }
 
-        /* 📦 对话框外层包裹器：为了完美解决 overflow: hidden 剪裁黄色标签的致命 Bug */
+        /* 对话框外层包裹器 */
         .dialogue-wrapper {
             position: relative;
             width: 100%;
         }
 
-        /* 🔧 重新设计的黄色系统标签：彻底解离，拥有独立且最高的层级渲染 */
+        /* 左上角黄色系统标签 */
         .dialogue-tag {
             position: absolute; 
             top: -11px; 
@@ -103,7 +104,23 @@
             padding: 2px 10px; 
             border: 1px solid #000;
             box-shadow: 2px 2px 0px #000;
-            z-index: 99; /* 确保骑在最上层 */
+            z-index: 99; 
+        }
+
+        /* 🎨 核心新增：右上角浅蓝色s4U风格副标题方框 */
+        .dialogue-subtitle {
+            position: absolute;
+            top: -11px;
+            right: 30px;
+            background: #e6f7ff; /* 浅蓝色底 */
+            color: #0066cc;     /* 深蓝色像素字色 */
+            font-size: 11px;
+            font-weight: 900;
+            padding: 2px 12px;
+            border: 1px solid #00f2ff; /* 浅蓝色边框线 */
+            box-shadow: 2px 2px 0px rgba(0, 242, 255, 0.3);
+            z-index: 99;
+            letter-spacing: 1px;
         }
 
         .dialogue-box {
@@ -112,14 +129,14 @@
             border: 2px solid #cbd2d6;
             border-left: 12px solid var(--s4u-magenta);
             border-right: 12px solid var(--s4u-cyan);
-            padding: 55px 55px 70px 55px; 
+            padding: 65px 55px 70px 55px; /* 调整顶部Padding，为副标题留出清透的空间 */
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 100%; 
             min-height: 460px; 
             box-sizing: border-box;
             cursor: pointer;
             transition: transform 0.1s ease;
-            overflow: hidden; /* 继续安全裁剪内部的 GIF 挂件 */
+            overflow: hidden; 
         }
         .dialogue-box:active { transform: scale(0.995); }
 
@@ -262,6 +279,8 @@
 
         <div class="dialogue-wrapper">
             <div class="dialogue-tag">SYSTEM // DE_SYMBOLIZATION_LOG</div>
+            <div class="dialogue-tag dialogue-subtitle" id="subtitle-area">SUB_00 // INIT</div>
+            
             <div class="dialogue-box" onclick="handleBoxClick()">
                 <div class="stage-gif-widget"></div>
                 <div id="text-area"></div>
@@ -294,19 +313,41 @@
             "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我想向您学习。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。"
         ];
 
+        // 📝 接口 A：在这里自定义你前10页正文的右上角副标题文案（数量需与pages数组严格对齐）
+        const subtitlePages = [
+            "PART_01 // BREAK_THE_LAW",
+            "PART_02 // THE_FALSE_DAWN",
+            "PART_03 // ESCAPISM_ACCELERATION",
+            "PART_04 // POST_TRUTH_OWL",
+            "PART_05 // OSTRACISM_LOG",
+            "PART_06 // COMPULSIVE_CONFLICT",
+            "PART_07 // SHATTERING_THE_SHELL",
+            "PART_08 // THE_ROOT_CAUSE",
+            "PART_09 // SINGULARITY_FOUND",
+            "PART_10 // THE_OPEN_WORLD"
+        ];
+
         // 📝 隐藏分支拆页
         const secretEmotionPages = [
             "这个月我大概花了很长时间去离开我原来的所谓越痛苦越深刻的舒适圈，我是一个很矛盾且傲慢的人，所以我明白我真的欠您一个非常认真的道歉。\n\n那天我们的真心换真心，但是我没有真的很认真的去理解那段话的意义，我对此非常抱歉。",
             "我之后一定不会散发那些晦暗的东西了，我会尊重这阵自由的风，我很珍惜我们的磁场，希望您能再相信我一次，人之间的关系难免折痕，但是我会承担这份责任，我们的关系即便走完莫比乌斯环，重回起点，回到那个让我们都舒服的瞬间。"
         ];
 
+        // 📝 接口 B：在这里定义你两页隐藏情绪分支的右上角副标题文案
+        const secretSubtitlePages = [
+            "SUB_LOG_A // THE_BREAKDOWN",
+            "SUB_LOG_B // THE_PROMISE"
+        ];
+
         const finalPage = "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上，我希望您的开放世界充满色彩和希望。\n\nMy sincerest apologies.";
+
+        // 📝 接口 C：在这里定义你最后一页黑格尔结语的右上角副标题文案
+        const finalSubtitle = "FIN // MY_SINCEREST_APOLOGIES";
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
         let timer = null;
         let choicesShown = false;
         
-        // 状态控制机
         let emotionBranchChosen = false; 
         let isReadingSecretPage = false;
         let secretPageIndex = 0; 
@@ -383,11 +424,24 @@
             }
         }
 
+        // 🔗 刷新副标题显示逻辑
+        function updateSubtitle() {
+            const subArea = document.getElementById('subtitle-area');
+            if (isReadingSecretPage) {
+                subArea.innerText = secretSubtitlePages[secretPageIndex];
+            } else if (isReadingFinalPage) {
+                subArea.innerText = finalSubtitle;
+            } else {
+                subArea.innerText = subtitlePages[currentPage];
+            }
+        }
+
         function showPage() {
             isTyping = true;
             charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
             document.getElementById('proceed-hint').style.display = "none";
+            updateSubtitle(); // 在翻页渲染文本的第一时间同步更新副标题
             typeChar();
         }
 
@@ -525,6 +579,9 @@
             choicesShown = true;
             const box = document.getElementById('text-area');
             document.getElementById('proceed-hint').style.display = 'none';
+
+            // 选择结局时，副标题切换为最后的终端指令
+            document.getElementById('subtitle-area').innerText = "SYS_EXEC // SELECT_ENDING";
 
             box.innerHTML = `
                 <div class="choice-select-label">// SELECT_ending_NODE</div>
