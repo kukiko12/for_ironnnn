@@ -104,6 +104,7 @@
             border: 1px solid #000;
             box-shadow: 2px 2px 0px #000;
             z-index: 99; 
+            font-family: "Zpix", monospace;
         }
 
         /* 右上角浅蓝色s4U风格副标题方框 */
@@ -120,6 +121,7 @@
             box-shadow: 2px 2px 0px rgba(0, 242, 255, 0.3);
             z-index: 99;
             letter-spacing: 1px;
+            font-family: "Zpix", monospace;
         }
 
         .dialogue-box {
@@ -128,14 +130,14 @@
             border: 2px solid #cbd2d6;
             border-left: 12px solid var(--s4u-magenta);
             border-right: 12px solid var(--s4u-cyan);
-            padding: 65px 55px 70px 55px; 
+            padding: 45px 45px 50px 45px; 
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 100%; 
-            min-height: 460px; 
+            min-height: 480px; 
             box-sizing: border-box;
             cursor: pointer;
             transition: transform 0.1s ease;
-            overflow: hidden; 
+            overflow-y: auto; 
         }
         .dialogue-box:active { transform: scale(0.995); }
 
@@ -153,10 +155,11 @@
         }
 
         #text-area {
-            font-size: 19px; line-height: 2.4; color: #232323;
+            font-size: 17px; line-height: 2.1; color: #232323;
             white-space: pre-wrap; letter-spacing: 0.05em;
             word-break: break-all;
             position: relative; z-index: 2;
+            font-family: "Zpix", "SimSun", monospace;
         }
 
         .audit-footer {
@@ -178,16 +181,17 @@
         .code-string { color: #ce9178; }
 
         .click-proceed {
-            position: absolute; bottom: 25px; right: 35px;
-            font-size: 12px; color: var(--s4u-magenta);
+            position: absolute; bottom: 15px; right: 25px;
+            font-size: 11px; color: var(--s4u-magenta);
             font-weight: bold; animation: blink 1s infinite;
             z-index: 3;
+            font-family: "Zpix", monospace;
         }
 
         /* 选项样式 */
         .choice-option {
-            padding: 18px 20px;
-            margin: 15px 0;
+            padding: 15px 20px;
+            margin: 12px 0;
             border: 1px solid #ccc;
             border-left: 4px solid var(--s4u-magenta);
             cursor: pointer;
@@ -204,31 +208,34 @@
             transform: translateX(4px);
         }
         .choice-bracket { color: #999; font-size: 14px; }
-        .choice-node { font-size: 15px; letter-spacing: 1px; min-width: 160px; font-weight: bold; }
-        .choice-text { color: #333; font-size: 16px; margin-left: 8px; }
+        .choice-node { font-size: 14px; letter-spacing: 1px; min-width: 150px; font-weight: bold; font-family: "Zpix", monospace; }
+        .choice-text { color: #333; font-size: 15px; margin-left: 8px; font-family: "Zpix", monospace; }
 
         .choice-select-label {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #444;
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.8;
             letter-spacing: 1px;
             font-weight: bold;
+            font-family: "Zpix", monospace;
         }
 
         .end-message {
             color: #232323;
-            font-size: 19px;
-            line-height: 2.2;
-            margin-top: 20px;
+            font-size: 17px;
+            line-height: 2.0;
+            margin-top: 10px;
             white-space: pre-wrap;
+            font-family: "Zpix", monospace;
         }
 
         .process-complete {
             color: #888;
-            font-size: 12px;
-            margin-top: 30px;
+            font-size: 11px;
+            margin-top: 25px;
             letter-spacing: 1px;
+            font-family: "Zpix", monospace;
         }
 
         #audio-panel {
@@ -319,18 +326,15 @@
             "PART_10 // 在星水街等待的那只鸟"
         ];
 
-        // ==========================================
-        // 
-        // ==========================================
         const secretEmotionPages = [
             "这个月我大概花了很长时间去离开我原来的所谓越痛苦越深刻的舒适圈，我是一个很矛盾且傲慢的人，所以我明白我真的欠您一个非常认真的道歉。\n\n那天我们的真心换真心，但是我没有真的很认真的去理解那段话的意义，我对此非常抱歉。",
             "我之后一定不会散发那些晦暗的东西了，这阵自由的风，我很珍惜我们的磁场，希望您能再相信我一次，人生是莫比乌斯环。初识的那个起点，那个让彼此舒服的地方，我们还会走回去的。这次我会承担我该承担的，做一些真正利他的事情。",
             "你之前说我有点理想主义倾向，其实不完全是，我是一个带有解离倾向的加速主义者，所以在面对一些我很害怕的事情的时候，我也会应激因此做一些很诡异的事情，让你觉得我不像我。",
             "在这一个多月的时间里面，我走访了很多对我产生影响的人，并且针对让调酒师重新为我调酒进行了专门训练（？），我不会再让你承担边界之外的东西了，我的问题我会自己克服，我只是不太想失去一个有意思的灵魂或者样本，就像我们刚认识那天那样。",
-            "虽然我只是您随便捞到的人（？），但是我觉得缘分就是缘分，如果我不努力抓住的话，我会后悔的，所以如果我会更加尽力的维系这段友谊，以全新的我，不再以痛苦为深刻的我。"
+            "Although I might just be someone you crossed paths with by chance (?), I truly believe connection is connection. If I don't try my best to hold onto it, I'll regret it. So I will dedicate myself even more to preserving this friendship—as a brand new me, no longer viewing pain as depth."
         ];
 
-        const finalPage = "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上，我希望您的开放世界充满色彩和希望，让优秀成为一种习惯吧\n\nMy sincerest apologies.";
+        const finalPage = "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上，我希望您的开放世界充满色彩和希望，让优秀成为一种习惯吧。\n\nMy sincerest apologies.";
         const finalSubtitle = "FIN // MY_SINCEREST_APOLOGIES";
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
@@ -345,7 +349,7 @@
 
         let currentAudio = null;
         let fadeInterval = null;
-        let audioCtx = null; // 延迟到用户点击交互后进行初始化，规避浏览器安全拦截
+        let audioCtx = null; 
 
         function playBeep(freq = 800, duration = 0.01) {
             if (!audioCtx) return;
@@ -403,7 +407,6 @@
             }
 
             if (canStart) {
-                // 安全实例化音频上下文
                 if (!audioCtx) {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
@@ -454,7 +457,7 @@
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
                 if (charIndex % 2 === 0) playBeep(1200, 0.008); 
-                timer = setTimeout(typeChar, 50);
+                timer = setTimeout(typeChar, 40);
             } else {
                 completePage();
             }
@@ -617,15 +620,49 @@
 
             const box = document.getElementById('text-area');
             const messages = {
-                'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，至少让我直接说出我很抱歉，我很难受。\n\n“永远开心幸福很难，所以我祝你有过安睡的夜晚',
+                'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，至少让我直接说出我很抱歉，我很难受。',
                 'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥亦或是猫头鹰都会落地的，去一切开始的地方吃顿饭吧，我不会再散发恶意了。',
-                'HORIZON': '// STATUS: NEW_JOURNEY_INITIATED.\n// 我不确切这个选项代表着什么，或许写下这个网页的我也在犹豫和思考，不过希望我们能在没有黑暗的地方未来重逢。\n\n“永远开心幸福很难，所以我祝你有个安睡的夜晚'
+                'HORIZON': '// STATUS: NEW_JOURNEY_INITIATED.\n// 我不确切这个选项代表着什么，或许写下这个网页的我也在犹豫和思考，不过希望我们能在没有黑暗的地方未来重逢。'
             };
 
+            // 补全半个双引号的格式，渲染基础结局
             box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
+            
+            // 优雅弹出高度还原的独立像素小羊祝福卡片视窗
+            setTimeout(() => {
+                const sheepCardHtml = `
+                    <div style="
+                        margin-top: 25px;
+                        padding: 18px;
+                        background: #fdfaf2;
+                        border: 2px solid #cbd2d6;
+                        box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
+                        display: flex;
+                        gap: 20px;
+                        align-items: center;
+                        animation: fadeIn 0.6s ease;
+                    ">
+                        <div style="text-align: center; flex-shrink: 0; font-family: 'Zpix', monospace;">
+                            <pre style="margin: 0; font-family: monospace; font-size: 8px; line-height: 1.1; color: #555;">
+   _  _
+  (o)(o)
+   (  )
+   m--m
+                            </pre>
+                            <div style="font-size: 11px; color: #777; margin-top: 4px; font-weight: bold;">晚安小咩</div>
+                        </div>
+                        <div style="font-size: 15px; line-height: 1.8; color: #232323; letter-spacing: 1px; font-family: 'Zpix', 'SimSun', monospace;">
+                            永远开心幸福很难，<br>所以我祝你有个安睡的夜晚。
+                        </div>
+                    </div>
+                `;
+                box.innerHTML += sheepCardHtml;
+            }, 1000);
+
+            // 终章序列完成提示
             setTimeout(() => {
                 box.innerHTML += `<div class="process-complete">[ PROCESS_COMPLETE ]</div>`;
-            }, 1500);
+            }, 2200);
         }
 
         function triggerBGMWithFade(choice) {
