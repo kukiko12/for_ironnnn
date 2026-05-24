@@ -16,7 +16,6 @@
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            /* 🔗 核心修改：已全量为你接入独立的 bg.jpg 背景图接口 */
             background-image: url('./bg.jpg');
             background-size: cover;
             background-position: center;
@@ -107,17 +106,17 @@
             z-index: 99; 
         }
 
-        /* 🎨 核心新增：右上角浅蓝色s4U风格副标题方框 */
+        /* 右上角浅蓝色s4U风格副标题方框 */
         .dialogue-subtitle {
             position: absolute;
             top: -11px;
             right: 30px;
-            background: #e6f7ff; /* 浅蓝色底 */
-            color: #0066cc;     /* 深蓝色像素字色 */
+            background: #e6f7ff; 
+            color: #0066cc;     
             font-size: 11px;
             font-weight: 900;
             padding: 2px 12px;
-            border: 1px solid #00f2ff; /* 浅蓝色边框线 */
+            border: 1px solid #00f2ff; 
             box-shadow: 2px 2px 0px rgba(0, 242, 255, 0.3);
             z-index: 99;
             letter-spacing: 1px;
@@ -129,7 +128,7 @@
             border: 2px solid #cbd2d6;
             border-left: 12px solid var(--s4u-magenta);
             border-right: 12px solid var(--s4u-cyan);
-            padding: 65px 55px 70px 55px; /* 调整顶部Padding，为副标题留出清透的空间 */
+            padding: 65px 55px 70px 55px; 
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 100%; 
             min-height: 460px; 
@@ -313,35 +312,25 @@
             "在我过去的人生里面，我只能做到 1 和 3，但是我在您身上看到了生命的整合力。如果可以的话，我还想和您继续相处下去。在探索这个开放世界的过程中，我想向您学习。而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。"
         ];
 
-        // 📝 接口 A：在这里自定义你前10页正文的右上角副标题文案（数量需与pages数组严格对齐）
+        // 📝 固定的前10页正文副标题（保持原样）
         const subtitlePages = [
-            "PART_01 // BREAK_THE_LAW",
-            "PART_02 // THE_FALSE_DAWN",
-            "PART_03 // ESCAPISM_ACCELERATION",
-            "PART_04 // POST_TRUTH_OWL",
-            "PART_05 // OSTRACISM_LOG",
-            "PART_06 // COMPULSIVE_CONFLICT",
-            "PART_07 // SHATTERING_THE_SHELL",
-            "PART_08 // THE_ROOT_CAUSE",
-            "PART_09 // SINGULARITY_FOUND",
+            "PART_01 // BREAK_THE_LAW", "PART_02 // THE_FALSE_DAWN", "PART_03 // ESCAPISM_ACCELERATION",
+            "PART_04 // POST_TRUTH_OWL", "PART_05 // OSTRACISM_LOG", "PART_06 // COMPULSIVE_CONFLICT",
+            "PART_07 // SHATTERING_THE_SHELL", "PART_08 // THE_ROOT_CAUSE", "PART_09 // SINGULARITY_FOUND",
             "PART_10 // THE_OPEN_WORLD"
         ];
 
-        // 📝 隐藏分支拆页
+        // ==========================================
+        // 🚀 【核心灵活接口】：在这里直接加减或修改隐藏页！
+        // 你想写 3 页、4 页甚至更多，只需要在后面用逗号隔开继续加字符串即可。
+        // 底层指针会自动完美适配，绝对不需要去动下方的逻辑代码！
+        // ==========================================
         const secretEmotionPages = [
             "这个月我大概花了很长时间去离开我原来的所谓越痛苦越深刻的舒适圈，我是一个很矛盾且傲慢的人，所以我明白我真的欠您一个非常认真的道歉。\n\n那天我们的真心换真心，但是我没有真的很认真的去理解那段话的意义，我对此非常抱歉。",
             "我之后一定不会散发那些晦暗的东西了，我会尊重这阵自由的风，我很珍惜我们的磁场，希望您能再相信我一次，人之间的关系难免折痕，但是我会承担这份责任，我们的关系即便走完莫比乌斯环，重回起点，回到那个让我们都舒服的瞬间。"
         ];
 
-        // 📝 接口 B：在这里定义你两页隐藏情绪分支的右上角副标题文案
-        const secretSubtitlePages = [
-            "SUB_LOG_A // THE_BREAKDOWN",
-            "SUB_LOG_B // THE_PROMISE"
-        ];
-
         const finalPage = "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上，我希望您的开放世界充满色彩和希望。\n\nMy sincerest apologies.";
-
-        // 📝 接口 C：在这里定义你最后一页黑格尔结语的右上角副标题文案
         const finalSubtitle = "FIN // MY_SINCEREST_APOLOGIES";
 
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
@@ -424,11 +413,13 @@
             }
         }
 
-        // 🔗 刷新副标题显示逻辑
+        // 🔗 刷新副标题：已升级为高度弹性的【智能自动派生算法】
         function updateSubtitle() {
             const subArea = document.getElementById('subtitle-area');
             if (isReadingSecretPage) {
-                subArea.innerText = secretSubtitlePages[secretPageIndex];
+                // 💡 自动根据当前的页码，智能派生出符合 s4U 极客美感的编号（如：SUB_LOG_01 // CONFESS）
+                let pageNumber = String(secretPageIndex + 1).padStart(2, '0');
+                subArea.innerText = `SUB_LOG_${pageNumber} // AREA_A`;
             } else if (isReadingFinalPage) {
                 subArea.innerText = finalSubtitle;
             } else {
@@ -441,7 +432,7 @@
             charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
             document.getElementById('proceed-hint').style.display = "none";
-            updateSubtitle(); // 在翻页渲染文本的第一时间同步更新副标题
+            updateSubtitle(); 
             typeChar();
         }
 
@@ -497,6 +488,7 @@
                 return;
             }
 
+            // 🧬 核心控制流优化：动态计算数组长度，实现完全与代码解耦的纯文字自由支配
             if (isReadingSecretPage) {
                 if (secretPageIndex < secretEmotionPages.length - 1) {
                     secretPageIndex++; 
@@ -579,8 +571,6 @@
             choicesShown = true;
             const box = document.getElementById('text-area');
             document.getElementById('proceed-hint').style.display = 'none';
-
-            // 选择结局时，副标题切换为最后的终端指令
             document.getElementById('subtitle-area').innerText = "SYS_EXEC // SELECT_ENDING";
 
             box.innerHTML = `
@@ -623,7 +613,6 @@
             }).catch(e => console.log("Form check bypassed."));
 
             const box = document.getElementById('text-area');
-            
             const messages = {
                 'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，为我自己的无力',
                 'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥亦或是猫头鹰都会落地的，去一切开始的地方吃顿饭吧，我不会再散发恶意了。',
@@ -666,7 +655,6 @@
 
             if (currentAudio) {
                 currentAudio.volume = 0;
-                
                 currentAudio.play().then(() => {
                     if (statusIndicator) {
                         statusIndicator.innerText = `STREAMING_${choice}_AUDIO`;
