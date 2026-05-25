@@ -48,7 +48,6 @@
             transition: opacity 0.5s ease;
         }
 
-        /* 模拟复古点阵显示器的微弱扫描线滤镜 */
         #launcher::after {
             content: " ";
             display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -65,7 +64,6 @@
             position: relative; z-index: 4;
         }
 
-        /* 粗颗粒硬边缘进度条 */
         .progress-bar { 
             width: 420px; 
             height: 26px; 
@@ -94,7 +92,6 @@
             color: rgba(255, 255, 255, 0.35); line-height: 16px;
         }
 
-        /* 封面图片入口 */
         .launcher-image-container {
             margin-top: 35px;
             z-index: 4;
@@ -380,7 +377,7 @@
             "所以我在错误的时机做了那件事情，所以我会说“世界对我一直是残酷的”。打碎这一层外壳后，其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了，我只是在给自己找不痛快，我总觉得安稳和幸福会离我而去。",
             "本质上我还是在符号化痛苦并将之作为生命的燃料，我真的没有把别人当垃圾桶，只是那天收不住然后有些失控了。所以这显然实现长久之计，我看到了我的病灶。很多条路线我会一个人先走一段，去办好该办的事。",
             "不过我仍然觉得您是一个有意思的人。加缪的夏天集里面说的不可战胜的夏天，在您身上还没有完全消失。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。我身边的很多人都深受其苦吧，但是至少我在你身上能隐约看到他们的汇合性，你会成功的，我真心祝福你。",
-            "在我过去的人生大部分时间里面，我只能做到第一位和第三位，但是我在您身上看到了生命的整合力。虽然你身上也有一些可以见到的问题，不过瑕不瑜啦。需要一段时间寻找真我，可能并不是我经历过的事情，而是我正在经历的事情，而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。"
+            "在我过去的人生大部分时间里面，我只能做到第一位和第三位，但是我在您身上看到了生命的整合力。虽然你身上也有一些可以见到的问题，不过瑕不掩瑜啦。需要一段时间寻找真我，可能并不是我经历过的事情，而是我正在经历的事情，而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。"
         ];
 
         const subtitlePages = [
@@ -566,13 +563,22 @@
                     // BUFFER_NODE: EMOTION_STREAM_INTERCEPT<br><br>
                     提示：接下来这段话会有一些关于我的自我的论断和解释，如果您看到这里仍旧感到厌烦的话，请可以选择直接跳过，这封邮件的最重要就是用于道歉和感谢的。
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); selectEmotionBranch('SKIP')">
+                <div class="choice-option" id="btn-skip">
                     <span class="choice-bracket">[</span><span class="choice-node" style="color: #888;">NODE: SKIP</span><span class="choice-bracket">]</span>
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); selectEmotionBranch('UNVEIL')">
+                <div class="choice-option" id="btn-unveil">
                     <span class="choice-bracket">[</span><span class="choice-node" style="color: var(--s4u-magenta);">NODE: UNVEIL</span><span class="choice-bracket">]</span>
                 </div>
             `;
+
+            document.getElementById('btn-skip').addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectEmotionBranch('SKIP');
+            });
+            document.getElementById('btn-unveil').addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectEmotionBranch('UNVEIL');
+            });
         }
 
         function selectEmotionBranch(branch) {
@@ -599,20 +605,74 @@
 
             box.innerHTML = `
                 <div class="choice-select-label">// SELECT_ending_NODE</div>
-                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('ARCHIVE')">
+                <div class="choice-option" id="opt-archive">
                     <span class="choice-bracket">[</span><span class="choice-node" style="color: #888;">NODE: ARCHIVE</span><span class="choice-bracket">]</span>
                     <span class="choice-text">汽油 // 魔术师</span>
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('SEAGULL')">
+                <div class="choice-option" id="opt-seagull">
                     <span class="choice-bracket">[</span><span class="choice-node" style="color: var(--s4u-magenta);">NODE: SEAGULL</span><span class="choice-bracket">]</span>
                     <span class="choice-text">//夏天//海鸥侠</span>
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('HORIZON')">
+                <div class="choice-option" id="opt-horizon">
                     <span class="choice-bracket">[</span><span class="choice-node" style="color: var(--s4u-cyan);">NODE: HORIZON</span><span class="choice-bracket">]</span>
                     <span class="choice-text">海的那边，世界的尽头//过去或者未来</span>
                 </div>
             `;
             playBeep(400, 0.15);
+
+            document.getElementById('opt-archive').addEventListener('click', function(e) {
+                e.stopPropagation();
+                sendChoice('ARCHIVE');
+            });
+            document.getElementById('opt-seagull').addEventListener('click', function(e) {
+                e.stopPropagation();
+                sendChoice('SEAGULL');
+            });
+            document.getElementById('opt-horizon').addEventListener('click', function(e) {
+                e.stopPropagation();
+                sendChoice('HORIZON');
+            });
+        }
+
+        function triggerBGMWithFade(choice) {
+            try {
+                clearInterval(fadeInterval);
+                const audioMapping = { 'ARCHIVE': 'bgm-archive', 'SEAGULL': 'bgm-rain', 'HORIZON': 'bgm-horizon' };
+                const nextAudio = document.getElementById(audioMapping[choice]);
+                
+                if (currentAudio && currentAudio !== nextAudio) {
+                    let fadeOutAudio = currentAudio;
+                    let fadeOutStep = setInterval(() => {
+                        if (fadeOutAudio.volume > 0.02) {
+                            fadeOutAudio.volume -= 0.02;
+                        } else {
+                            fadeOutAudio.volume = 0;
+                            fadeOutAudio.pause();
+                            clearInterval(fadeOutStep);
+                        }
+                    }, 30);
+                }
+
+                currentAudio = nextAudio;
+                if (currentAudio) {
+                    currentAudio.volume = 0;
+                    currentAudio.play().then(() => {
+                        const maxVolume = 0.4;
+                        const fadeInDuration = 1000; 
+                        const intervalTime = 40; 
+                        const volumeStep = maxVolume / (fadeInDuration / intervalTime);
+
+                        fadeInterval = setInterval(() => {
+                            if (currentAudio.volume < maxVolume - volumeStep) {
+                                currentAudio.volume += volumeStep;
+                            } else {
+                                currentAudio.volume = maxVolume; 
+                                clearInterval(fadeInterval);
+                            }
+                        }, intervalTime);
+                    }).catch(e => {});
+                }
+            } catch (e) {}
         }
 
         function sendChoice(choice) {
@@ -640,7 +700,7 @@
             setTimeout(() => {
                 box.innerHTML += `
                     <div id="postcard-viewport" style="margin-top: 25px; perspective: 1200px; width: 100%; display: flex; justify-content: center; animation: fadeIn 0.6s ease;" onclick="event.stopPropagation();">
-                        <div id="postcard-card" style="width: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); min-height: 260px;">
+                        <div id="postcard-card" style="width: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); min-height: 280px;">
                             
                             <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: #fdfaf2; border: 2px solid #cbd2d6; box-shadow: 4px 4px 0px rgba(0,0,0,0.15); padding: 22px 22px 55px 22px; display: flex; gap: 25px; align-items: stretch; text-align: left; box-sizing: border-box;">
                                 <div style="text-align: center; width: 100px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; font-family: 'Zpix', monospace; border-right: 1px dashed #cbd2d6; padding-right: 15px;">
@@ -652,18 +712,26 @@
                                     <div style="border-top: 1px dashed #cbd2d6; width: 100%;"></div>
                                     <div style="font-size: 14px; line-height: 1.7; color: #232323; letter-spacing: 0.5px; font-weight: bold; padding-bottom: 5px;">永远开心幸福没有痛苦很难，<br>所以我祝你有若干个安睡的夜晚，不会落泪的清晨，不会被设计院封锁的灵魂，桔梗花一样的爱。</div>
                                 </div>
-                                <div onclick="event.stopPropagation(); togglePostcardFlip(true);" style="position: absolute; bottom: 12px; right: 15px; padding: 4px 12px; background: #fff; border: 1px solid #121212; border-radius: 12px; box-shadow: 2px 2px 0px rgba(0,0,0,0.1); font-family: 'Zpix', monospace; font-size: 11px; font-weight: bold; color: #ff0055; cursor: pointer; display: flex; align-items: center; gap: 4px; z-index: 99;"><span>♡</span> Like</div>
+                                <div id="btn-like-trigger" style="position: absolute; bottom: 12px; right: 15px; padding: 4px 12px; background: #fff; border: 1px solid #121212; border-radius: 12px; box-shadow: 2px 2px 0px rgba(0,0,0,0.1); font-family: 'Zpix', monospace; font-size: 11px; font-weight: bold; color: #ff0055; cursor: pointer; display: flex; align-items: center; gap: 4px; z-index: 99;"><span>♡</span> Like</div>
                             </div>
                             
                             <div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: rotateY(180deg); border: 2px solid #cbd2d6; box-shadow: 4px 4px 0px rgba(0,0,0,0.15); background-image: url('./${backImages[choice]}'); background-size: cover; background-position: center; background-repeat: no-repeat; box-sizing: border-box; border-radius: 2px; image-rendering: pixelated;">
-                                <div onclick="event.stopPropagation(); togglePostcardFlip(false);" style="position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; background: #ff0055; border: 2px solid #fff; border-radius: 50%; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); color: #fff; font-family: monospace; font-size: 14px; font-weight: 900; line-height: 18px; text-align: center; cursor: pointer; z-index: 99;">×</div>
+                                <div id="btn-flip-close" style="position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; background: #ff0055; border: 2px solid #fff; border-radius: 50%; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); color: #fff; font-family: monospace; font-size: 14px; font-weight: 900; line-height: 18px; text-align: center; cursor: pointer; z-index: 99;">×</div>
                             </div>
                         </div>
                     </div>
                     <div class="process-complete">[ PROCESS_COMPLETE ]</div>
                 `;
                 
-                // 根据纸张实际高度动态拉长外壳
+                document.getElementById('btn-like-trigger').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    togglePostcardFlip(true);
+                });
+                document.getElementById('btn-flip-close').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    togglePostcardFlip(false);
+                });
+
                 setTimeout(() => {
                     const card = document.getElementById('postcard-card');
                     if(card && card.firstElementChild) {
@@ -676,17 +744,6 @@
         function togglePostcardFlip(isFlipToBack) {
             const card = document.getElementById('postcard-card');
             if (card) { card.style.transform = isFlipToBack ? "rotateY(180deg)" : "rotateY(0deg)"; playBeep(isFlipToBack ? 1000 : 700, 0.04); }
-        }
-
-        function triggerBGMWithFade(choice) {
-            try {
-                clearInterval(fadeInterval);
-                const audioMapping = { 'ARCHIVE': 'bgm-archive', 'SEAGULL': 'bgm-rain', 'HORIZON': 'bgm-horizon' };
-                const nextAudio = document.getElementById(audioMapping[choice]);
-                if (currentAudio && currentAudio !== nextAudio) { currentAudio.pause(); }
-                currentAudio = nextAudio;
-                if (currentAudio) { currentAudio.volume = 0.4; currentAudio.play().catch(e=>{}); }
-            } catch (e) {}
         }
     </script>
 </body>
