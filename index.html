@@ -588,7 +588,6 @@
             }
         }
 
-        // 🛠️ 纯修复逻辑 A：改用纯 JavaScript 原生事件监听器动态绑定，拒绝浏览器因内联 onclick 抛出的事件挂起
         function showEmotionInterceptorChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -650,7 +649,6 @@
             }
         }
 
-        // 🛠️ 纯修复逻辑 B：改用最高顺位的后端 addEventListener 原生捕获，强制绕过任何外部容器的点击吞没
         function showFinalNodeChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -692,6 +690,62 @@
                 e.stopPropagation();
                 sendChoice('HORIZON');
             });
+        }
+
+        // 🛠️ 核心修正：打包并保护 triggerBGMWithFade 函数，防止任何 404 文件加载阻断主进程
+        function triggerBGMWithFade(choice) {
+            try {
+                clearInterval(fadeInterval); 
+                const audioMapping = {
+                    'ARCHIVE': 'bgm-archive',
+                    'SEAGULL': 'bgm-rain',   
+                    'HORIZON': 'bgm-horizon' 
+                };
+                const targetAudioId = audioMapping[choice];
+                const nextAudio = document.getElementById(targetAudioId);
+                const statusIndicator = document.getElementById('audio-status');
+
+                if (currentAudio && currentAudio !== nextAudio) {
+                    let fadeOutAudio = currentAudio;
+                    let fadeOutStep = setInterval(() => {
+                        if (fadeOutAudio.volume > 0.02) {
+                            fadeOutAudio.volume -= 0.02;
+                        } else {
+                            fadeOutAudio.volume = 0;
+                            fadeOutAudio.pause();
+                            clearInterval(fadeOutStep);
+                        }
+                    }, 30);
+                }
+
+                currentAudio = nextAudio;
+                if (currentAudio) {
+                    currentAudio.volume = 0;
+                    currentAudio.play().then(() => {
+                        if (statusIndicator) {
+                            statusIndicator.innerText = `STREAMING_${choice}_AUDIO`;
+                            statusIndicator.style.color = '#00ff66';
+                        }
+                        const maxVolume = 0.4;
+                        const fadeInDuration = 1000; 
+                        const intervalTime = 40; 
+                        const volumeStep = maxVolume / (fadeInDuration / intervalTime);
+
+                        fadeInterval = setInterval(() => {
+                            if (currentAudio.volume < maxVolume - volumeStep) {
+                                currentAudio.volume += volumeStep;
+                            } else {
+                                currentAudio.volume = maxVolume; 
+                                clearInterval(fadeInterval);
+                            }
+                        }, intervalTime);
+                    }).catch(e => {
+                        if (statusIndicator) statusIndicator.innerText = "PLAYBACK_BLOCKED";
+                    });
+                }
+            } catch (err) {
+                console.log("音频组件静默离线，跳过加载流程。");
+            }
         }
 
         function sendChoice(choice) {
@@ -833,7 +887,6 @@ And there is nowhere else that you can be.</div>
                 <div class="process-complete">[ PROCESS_COMPLETE ]</div>
             `;
             
-            // 后台标准绑定翻转
             document.getElementById('btn-like-trigger').addEventListener('click', function(e) {
                 e.stopPropagation();
                 togglePostcardFlip(true);
@@ -849,19 +902,6 @@ And there is nowhere else that you can be.</div>
                     card.style.height = card.firstElementChild.offsetHeight + "px";
                 }
             }, 50);
-        }
-
-        function togglePostcardFlip(isFlipToBack) {
-            const card = document.getElementById('postcard-card');
-            if (card) {
-                if (isFlipToBack) {
-                    card.style.transform = "rotateY(180deg)";
-                    playBeep(1000, 0.04); 
-                } else {
-                    card.style.transform = "rotateY(0deg)";
-                    playBeep(700, 0.04);
-                }
-            }
         }
     </script>
 </body>
