@@ -398,7 +398,7 @@
             "我之后一定不会散发那些晦暗的东西了，这阵自由的风，我很珍惜我们的磁场，希望您能再相信我一次，人生是莫比乌斯环. 初识的那个起点，那个让彼此舒服的地方，我们还会走回去的。这次我会承担我该承担的，做一些真正利他的事情。",
             "你之前说我有点理想主义倾向，其实不完全是，我是一个带有解离倾向的加速主义者，所以在面对一些我很害怕的事情的时候，我也会应激因此做一些很诡异的事情，让你觉得我不像我。",
             "在这一个多月的时间里面，我走访了很多对我产生影响的人，并且针对让调酒师重新为我调酒进行了专门训练（？），我不会再让你承担边界之外的东西了，我的问题我会自己克服，我只是不太想失去一个有意思拥有的灵魂或者样本，就像我们刚认识那天那样。",
-            "虽然我可能只是一个偶然与你相遇的人（？），但我真的相信，人与人之间的连接本身就是有意义的。如果我不尽全力去珍惜它，我一定会后悔。所以，我会以一个全新的自己，更加认真地去守护这段友谊——不再把痛苦误认为深刻的我，以一种温和，坚韧，可能有点阴暗但不会像炸弹一样的方式，我不会自己给自己徒增危机感。"
+            "Although I might just be someone you crossed paths with by chance (?), I truly believe connection is connection. If I don't try my best to hold onto it, I'll regret it. So I will dedicate myself even more to preserving this friendship—as a brand new me, no longer viewing pain as depth."
         ];
 
         const finalPage = "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上，我希望您的开放世界充满色彩和希望，让优秀成为一种习惯吧。\n\nMy sincerest apologies.";
@@ -588,6 +588,7 @@
             }
         }
 
+        // 🛠️ 纯修复逻辑 A：改用纯 JavaScript 原生事件监听器动态绑定，拒绝浏览器因内联 onclick 抛出的事件挂起
         function showEmotionInterceptorChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -599,17 +600,26 @@
                     // BUFFER_NODE: EMOTION_STREAM_INTERCEPT<br><br>
                     提示：接下来这段话会有一些关于我的自我的论断和解释，如果您看到这里仍旧感到厌烦的话，请可以选择直接跳过，这封邮件的最重要就是用于道歉和感谢的。
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); selectEmotionBranch('SKIP')">
+                <div class="choice-option" id="btn-skip">
                     <span class="choice-bracket">[</span>
                     <span class="choice-node" style="color: #888;">NODE: SKIP</span>
                     <span class="choice-bracket">]</span>
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); selectEmotionBranch('UNVEIL')">
+                <div class="choice-option" id="btn-unveil">
                     <span class="choice-bracket">[</span>
                     <span class="choice-node" style="color: var(--s4u-magenta);">NODE: UNVEIL</span>
                     <span class="choice-bracket">]</span>
                 </div>
             `;
+
+            document.getElementById('btn-skip').addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectEmotionBranch('SKIP');
+            });
+            document.getElementById('btn-unveil').addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectEmotionBranch('UNVEIL');
+            });
         }
 
         function selectEmotionBranch(branch) {
@@ -640,6 +650,7 @@
             }
         }
 
+        // 🛠️ 纯修复逻辑 B：改用最高顺位的后端 addEventListener 原生捕获，强制绕过任何外部容器的点击吞没
         function showFinalNodeChoices() {
             choicesShown = true;
             const box = document.getElementById('text-area');
@@ -648,19 +659,19 @@
 
             box.innerHTML = `
                 <div class="choice-select-label">// SELECT_ending_NODE</div>
-                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('ARCHIVE')">
+                <div class="choice-option" id="opt-archive">
                     <span class="choice-bracket">[</span>
                     <span class="choice-node" style="color: #888;">NODE: ARCHIVE</span>
                     <span class="choice-bracket">]</span>
                     <span class="choice-text">汽油 // 魔术师</span>
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('SEAGULL')">
+                <div class="choice-option" id="opt-seagull">
                     <span class="choice-bracket">[</span>
                     <span class="choice-node" style="color: var(--s4u-magenta);">NODE: SEAGULL</span>
                     <span class="choice-bracket">]</span>
                     <span class="choice-text">//夏天//海鸥侠</span>
                 </div>
-                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('HORIZON')">
+                <div class="choice-option" id="opt-horizon">
                     <span class="choice-bracket">[</span>
                     <span class="choice-node" style="color: var(--s4u-cyan);">NODE: HORIZON</span>
                     <span class="choice-bracket">]</span>
@@ -668,6 +679,19 @@
                 </div>
             `;
             playBeep(400, 0.15);
+
+            document.getElementById('opt-archive').addEventListener('click', function(e) {
+                e.stopPropagation();
+                sendChoice('ARCHIVE');
+            });
+            document.getElementById('opt-seagull').addEventListener('click', function(e) {
+                e.stopPropagation();
+                sendChoice('SEAGULL');
+            });
+            document.getElementById('opt-horizon').addEventListener('click', function(e) {
+                e.stopPropagation();
+                sendChoice('HORIZON');
+            });
         }
 
         function sendChoice(choice) {
@@ -706,7 +730,6 @@
                 'HORIZON': '3.jpg'
             };
 
-            // 🛠️ 核心进化：原位覆盖渲染，彻底清空前代DOM碎片，腾出完美且百分之百无阻挡的3D透视运行环境
             box.innerHTML = `
                 <div class="end-message">${messages[choice]}</div>
                 
@@ -764,7 +787,7 @@ And there is nowhere else that you can be.</div>
                                 </div>
                             </div>
 
-                            <div onclick="event.stopPropagation(); togglePostcardFlip(true);" style="
+                            <div id="btn-like-trigger" style="
                                 position: absolute; bottom: 12px; right: 15px;
                                 padding: 4px 10px; background: #fff;
                                 border: 1px solid #121212; border-radius: 12px;
@@ -791,7 +814,7 @@ And there is nowhere else that you can be.</div>
                             border-radius: 2px;
                             image-rendering: pixelated;
                         ">
-                            <div onclick="event.stopPropagation(); togglePostcardFlip(false);" style="
+                            <div id="btn-flip-close" style="
                                 position: absolute; top: 12px; right: 12px;
                                 width: 22px; height: 22px; background: #ff0055;
                                 border: 2px solid #fff; border-radius: 50%;
@@ -810,7 +833,16 @@ And there is nowhere else that you can be.</div>
                 <div class="process-complete">[ PROCESS_COMPLETE ]</div>
             `;
             
-            // 动态校正高度防止崩塌
+            // 后台标准绑定翻转
+            document.getElementById('btn-like-trigger').addEventListener('click', function(e) {
+                e.stopPropagation();
+                togglePostcardFlip(true);
+            });
+            document.getElementById('btn-flip-close').addEventListener('click', function(e) {
+                e.stopPropagation();
+                togglePostcardFlip(false);
+            });
+
             setTimeout(() => {
                 const card = document.getElementById('postcard-card');
                 if(card && card.firstElementChild) {
