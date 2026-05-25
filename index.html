@@ -194,6 +194,8 @@
             cursor: pointer;
             transition: transform 0.1s ease;
             overflow-y: auto; 
+            display: flex;
+            flex-direction: column;
         }
         .dialogue-box:active { transform: scale(0.995); }
 
@@ -216,6 +218,14 @@
             word-break: break-all;
             position: relative; z-index: 2;
             font-family: "Zpix", "SimSun", monospace;
+            flex-grow: 1;
+        }
+
+        /* 💾 将卡片容器提升至和 text-area 平级，杜绝绝对定位对选项块区域的覆盖阻挡 */
+        #postcard-container {
+            position: relative;
+            z-index: 6;
+            width: 100%;
         }
 
         .audit-footer {
@@ -255,7 +265,7 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            position: relative; z-index: 5;
+            position: relative; z-index: 99; /* 强制按钮处于交互的最上层 */
         }
         .choice-option:hover {
             background: rgba(255, 0, 85, 0.08);
@@ -350,6 +360,7 @@
             <div class="dialogue-box" onclick="handleBoxClick()">
                 <div class="stage-gif-widget"></div>
                 <div id="text-area"></div>
+                <div id="postcard-container"></div>
                 <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
             </div>
         </div>
@@ -366,13 +377,12 @@
     </div>
 
     <script>
-        // 📚 10页正文剧情流
         const pages = [
             "密涅瓦的猫头鹰在黄昏起飞。所以在经历了这不知道多少天的闭门沉思之后，我才意识到，我一直以来维系自己生活的这套符号化法则非常脆弱，也会经常性的伤害别人，在我写下这些符号化的语言之前，我最先要说，对不起。",
             "清晨的时候，那时候的我被多巴胺和救助感蒙蔽。那个时候的我只是沉浸在一种救助别人和欣赏别人痛苦的自满自足之中，根本就察觉不到他，我其实是总觉得自己高人一等的",
             "正午的时候，在加速冲刺，试图用不断的接触和高密度的互动来让时间的密度大一些，我依旧没看到我在逃避自我建设，逃避真正的责任。我没有想寻求短择关系，但显然我身上没有什么显示我正在积极的投入自我建设。",
             "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性，即拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。",
-            "现在我被放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受，我的喜欢，我的痛苦都被我符号化了，缺乏直接表达感受的能力。",
+            "现在我被放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则烟本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受，我的喜欢，我的痛苦都被我符号化了，缺乏直接表达感受的能力。",
             "我在toxic的环境下呆久了，我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方，所以做了很多加速倾向的事情，现在想来你说的是对的，即便被生活推着走，也能有直接的感受。",
             "所以我在错误的时机做了那件事情，所以我会说“世界对我一直是残酷的”。打碎这一层外壳后，其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了，我只是在给自己找不痛快，我总觉得安稳和幸福会离我而去。",
             "本质上我还是在符号化痛苦并将之作为生命的燃料，我真的没有把别人当垃圾桶，只是那天收不住然后有些失控了。所以这显然不是长久之计，我看到了我的病灶。很多条路线我会一个人先走一段，去办好该办的事。",
@@ -387,7 +397,6 @@
             "PART_10 // 在星水街等待的那只鸟"
         ];
 
-        // 🔒 5页隐藏情绪流
         const secretEmotionPages = [
             "这个月我大概花了很长时间去离开我原来的所谓越痛苦越深刻的舒适圈，我是一个很矛盾且傲慢的人，所以我明白我真的欠您一个非常认真的道歉。\n\n那天我们的真心换真心，但是我没有真的很认真地去理解那段话的意义，我对此非常抱歉。",
             "我之后一定不会散发那些晦暗的东西了，这阵自由的风，我很珍惜我们的磁场，希望您能再相信我一次，人生是莫比乌斯环. 初识的那个起点，那个让彼此舒服的地方，我们还会走回去的。这次我会承担我该承担的，做一些真正利他的事情。",
@@ -500,6 +509,7 @@
             isTyping = true;
             charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
+            document.getElementById('postcard-container').innerHTML = ""; // 清空上一轮明信片
             document.getElementById('proceed-hint').style.display = "none";
             updateSubtitle(); 
             typeChar();
@@ -665,7 +675,6 @@
             playBeep(400, 0.15);
         }
 
-        // 🌅 3D明信片翻面渲染
         function sendChoice(choice) {
             playPunchThud(); 
             triggerBGMWithFade(choice); 
@@ -682,6 +691,8 @@
             }).catch(e => console.log("Form check bypassed."));
 
             const box = document.getElementById('text-area');
+            const postcardContainer = document.getElementById('postcard-container');
+            
             const messages = {
                 'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，至少让我直接说出我很抱歉，我很难受，You are here——祝您在永恒的当下里，拥有不再被晦暗打扰的广阔世界。再次抱歉。',
                 'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥和猫头鹰都会落地的，等心愿都降落，去一切开始的地方整点薯条吧。',
@@ -700,12 +711,14 @@
                 'HORIZON': '3.jpg'
             };
 
+            // 清空并打出结局提示
             box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
             
+            // 📬 🛠️ 关键修复：将 3D 明信片组件从 text-area 隔离，挂载到独立的高层容器中，防止覆盖按钮点击区域
             setTimeout(() => {
                 const postcardHtml = `
                     <div id="postcard-viewport" style="
-                        margin-top: 25px;
+                        margin-top: 2px;
                         perspective: 1200px;
                         width: 100%;
                         display: flex;
@@ -801,7 +814,7 @@ And there is nowhere else that you can be.</div>
                         </div>
                     </div>
                 `;
-                box.innerHTML += postcardHtml;
+                postcardContainer.innerHTML = postcardHtml;
                 
                 setTimeout(() => {
                     const card = document.getElementById('postcard-card');
