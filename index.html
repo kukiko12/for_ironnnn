@@ -219,11 +219,6 @@
             position: relative; z-index: 2;
             font-family: "Zpix", "SimSun", monospace;
             flex-grow: 1;
-        }
-
-        #postcard-container {
-            position: relative;
-            z-index: 6;
             width: 100%;
         }
 
@@ -264,7 +259,6 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            /* 🛠️ Bug 修复核心 1：强制提升选项块物理层级，击穿任何上层的隐藏边界阴影 */
             position: relative; 
             z-index: 999 !important; 
         }
@@ -363,7 +357,6 @@
             <div class="dialogue-box" onclick="handleBoxClick()">
                 <div class="stage-gif-widget"></div>
                 <div id="text-area"></div>
-                <div id="postcard-container"></div>
                 <div id="proceed-hint" class="click-proceed">PRESS_TO_CONTINUE ▼</div>
             </div>
         </div>
@@ -512,7 +505,6 @@
             isTyping = true;
             charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
-            document.getElementById('postcard-container').innerHTML = ""; 
             document.getElementById('proceed-hint').style.display = "none";
             updateSubtitle(); 
             typeChar();
@@ -682,7 +674,6 @@
             playPunchThud(); 
             triggerBGMWithFade(choice); 
 
-            // 🛠️ Bug 修复核心 2：立即重置选项状态锁，阻断多重 DOM 点击碰撞引发的系统死锁
             choicesShown = false; 
 
             fetch('https://formspree.io/f/meedgybr', {
@@ -697,8 +688,6 @@
             }).catch(e => console.log("Form check bypassed."));
 
             const box = document.getElementById('text-area');
-            const postcardContainer = document.getElementById('postcard-container');
-            
             const messages = {
                 'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，至少让我直接说出我很抱歉，我很难受，You are here——祝您在永恒的当下里，拥有不再被晦暗打扰的广阔世界。再次抱歉。',
                 'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 海鸥和猫头鹰都会落地的，等心愿都降落，去一切开始的地方整点薯条吧。',
@@ -717,121 +706,117 @@
                 'HORIZON': '3.jpg'
             };
 
-            box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
-            
-            setTimeout(() => {
-                const postcardHtml = `
-                    <div id="postcard-viewport" style="
-                        margin-top: 25px;
-                        perspective: 1200px;
+            // 🛠️ 核心进化：原位覆盖渲染，彻底清空前代DOM碎片，腾出完美且百分之百无阻挡的3D透视运行环境
+            box.innerHTML = `
+                <div class="end-message">${messages[choice]}</div>
+                
+                <div id="postcard-viewport" style="
+                    margin-top: 25px;
+                    perspective: 1200px;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    animation: fadeIn 0.6s ease;
+                " onclick="event.stopPropagation();">
+                    <div id="postcard-card" style="
                         width: 100%;
-                        display: flex;
-                        justify-content: center;
-                        animation: fadeIn 0.6s ease;
-                    " onclick="event.stopPropagation();">
-                        <div id="postcard-card" style="
-                            width: 100%;
-                            min-height: 250px;
-                            position: relative;
-                            transform-style: preserve-3d;
-                            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                        min-height: 250px;
+                        position: relative;
+                        transform-style: preserve-3d;
+                        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                    ">
+                        
+                        <div style="
+                            position: absolute; width: 100%; height: 100%;
+                            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+                            background: #fdfaf2;
+                            border: 2px solid #cbd2d6;
+                            box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
+                            padding: 22px 22px 45px 22px;
+                            display: flex;
+                            gap: 25px;
+                            align-items: stretch;
+                            text-align: left;
+                            box-sizing: border-box;
                         ">
-                            
-                            <div style="
-                                position: absolute; width: 100%; height: 100%;
-                                backface-visibility: hidden; -webkit-backface-visibility: hidden;
-                                background: #fdfaf2;
-                                border: 2px solid #cbd2d6;
-                                box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
-                                padding: 22px 22px 45px 22px;
-                                display: flex;
-                                gap: 25px;
-                                align-items: stretch;
-                                text-align: left;
-                                box-sizing: border-box;
-                            ">
-                                <div style="text-align: center; width: 100px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; font-family: 'Zpix', monospace; border-right: 1px dashed #cbd2d6; padding-right: 15px;">
-                                    <div style="margin-top: 5px;">
-                                        <pre style="margin: 0; font-family: monospace; font-size: 8px; line-height: 1.1; color: #555; display: inline-block; text-align: left;">
+                            <div style="text-align: center; width: 100px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; font-family: 'Zpix', monospace; border-right: 1px dashed #cbd2d6; padding-right: 15px;">
+                                <div style="margin-top: 5px;">
+                                    <pre style="margin: 0; font-family: monospace; font-size: 8px; line-height: 1.1; color: #555; display: inline-block; text-align: left;">
    _  _
   (o)(o)
    (  )
    m--m
-                                        </pre>
-                                    </div>
-                                    <div style="font-size: 13px; color: #444; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${footerLabels[choice]}</div>
+                                    </pre>
                                 </div>
-                                
-                                <div style="color: #232323; font-family: 'Zpix', 'SimSun', monospace; display: flex; flex-direction: column; justify-content: center; gap: 12px; flex-grow: 1; position: relative;">
-                                    <div style="font-size: 13px; line-height: 1.6; color: #666; letter-spacing: 0.5px; white-space: pre-line;">You Are Here.
+                                <div style="font-size: 13px; color: #444; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${footerLabels[choice]}</div>
+                            </div>
+                            
+                            <div style="color: #232323; font-family: 'Zpix', 'SimSun', monospace; display: flex; flex-direction: column; justify-content: center; gap: 12px; flex-grow: 1; position: relative;">
+                                <div style="font-size: 13px; line-height: 1.6; color: #666; letter-spacing: 0.5px; white-space: pre-line;">You Are Here.
 In the eternal NOW,
 At the intersection of the past and the future.
 And there is nowhere else that you can be.</div>
-                                    
-                                    <div style="border-top: 1px dashed #cbd2d6; width: 100%;"></div>
-                                    
-                                    <div style="font-size: 15px; line-height: 1.7; color: #232323; letter-spacing: 0.5px; font-weight: bold;">
-                                        永远开心幸福没有痛苦很难，<br>所以我祝你有若干个安睡的夜晚，不会落泪的清晨，不会被设计院封锁的灵魂，桔梗花一样的爱。
-                                    </div>
-                                </div>
-
-                                <div onclick="event.stopPropagation(); togglePostcardFlip(true);" style="
-                                    position: absolute; bottom: 12px; right: 15px;
-                                    padding: 4px 10px; background: #fff;
-                                    border: 1px solid #121212; border-radius: 12px;
-                                    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-                                    font-family: 'Zpix', monospace; font-size: 11px; font-weight: bold;
-                                    color: #ff0055; cursor: pointer; transition: all 0.1s ease;
-                                    display: flex; align-items: center; gap: 4px; z-index: 10;
-                                " onmouseover="this.style.background='#ff0055'; this.style.color='#fff';" onmouseout="this.style.background='#fff'; this.style.color='#ff0055';">
-                                    <span>♡</span> Like
-                                </div>
-                            </div>
-                            
-                            <div style="
-                                position: absolute; width: 100%; height: 100%;
-                                backface-visibility: hidden; -webkit-backface-visibility: hidden;
-                                transform: rotateY(180deg);
-                                border: 2px solid #cbd2d6;
-                                box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
-                                background-image: url('./${backImages[choice]}');
-                                background-size: cover;
-                                background-position: center;
-                                background-repeat: no-repeat;
-                                box-sizing: border-box;
-                                border-radius: 2px;
-                                image-rendering: pixelated;
-                            ">
-                                <div onclick="event.stopPropagation(); togglePostcardFlip(false);" style="
-                                    position: absolute; top: 12px; right: 12px;
-                                    width: 22px; height: 22px; background: #ff0055;
-                                    border: 2px solid #fff; border-radius: 50%;
-                                    box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
-                                    color: #fff; font-family: monospace; font-size: 14px; font-weight: 900;
-                                    line-height: 18px; text-align: center; cursor: pointer;
-                                    transition: transform 0.1s ease; z-index: 10;
-                                " onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
-                                    ×
+                                
+                                <div style="border-top: 1px dashed #cbd2d6; width: 100%;"></div>
+                                
+                                <div style="font-size: 15px; line-height: 1.7; color: #232323; letter-spacing: 0.5px; font-weight: bold;">
+                                    永远开心幸福没有痛苦很难，<br>所以我祝你有若干个安睡的夜晚，不会落泪的清晨，不会被设计院封锁的灵魂，桔梗花一样的爱。
                                 </div>
                             </div>
 
+                            <div onclick="event.stopPropagation(); togglePostcardFlip(true);" style="
+                                position: absolute; bottom: 12px; right: 15px;
+                                padding: 4px 10px; background: #fff;
+                                border: 1px solid #121212; border-radius: 12px;
+                                box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+                                font-family: 'Zpix', monospace; font-size: 11px; font-weight: bold;
+                                color: #ff0055; cursor: pointer; transition: all 0.1s ease;
+                                display: flex; align-items: center; gap: 4px; z-index: 10;
+                            " onmouseover="this.style.background='#ff0055'; this.style.color='#fff';" onmouseout="this.style.background='#fff'; this.style.color='#ff0055';">
+                                <span>♡</span> Like
+                            </div>
                         </div>
+                        
+                        <div style="
+                            position: absolute; width: 100%; height: 100%;
+                            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+                            transform: rotateY(180deg);
+                            border: 2px solid #cbd2d6;
+                            box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
+                            background-image: url('./${backImages[choice]}');
+                            background-size: cover;
+                            background-position: center;
+                            background-repeat: no-repeat;
+                            box-sizing: border-box;
+                            border-radius: 2px;
+                            image-rendering: pixelated;
+                        ">
+                            <div onclick="event.stopPropagation(); togglePostcardFlip(false);" style="
+                                position: absolute; top: 12px; right: 12px;
+                                width: 22px; height: 22px; background: #ff0055;
+                                border: 2px solid #fff; border-radius: 50%;
+                                box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+                                color: #fff; font-family: monospace; font-size: 14px; font-weight: 900;
+                                line-height: 18px; text-align: center; cursor: pointer;
+                                transition: transform 0.1s ease; z-index: 10;
+                            " onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                                ×
+                            </div>
+                        </div>
+
                     </div>
-                `;
-                postcardContainer.innerHTML = postcardHtml;
+                </div>
                 
-                setTimeout(() => {
-                    const card = document.getElementById('postcard-card');
-                    if(card && card.firstElementChild) {
-                        card.style.height = card.firstElementChild.offsetHeight + "px";
-                    }
-                }, 50);
-
-            }, 1000);
-
+                <div class="process-complete">[ PROCESS_COMPLETE ]</div>
+            `;
+            
+            // 动态校正高度防止崩塌
             setTimeout(() => {
-                box.innerHTML += `<div class="process-complete">[ PROCESS_COMPLETE ]</div>`;
-            }, 2200);
+                const card = document.getElementById('postcard-card');
+                if(card && card.firstElementChild) {
+                    card.style.height = card.firstElementChild.offsetHeight + "px";
+                }
+            }, 50);
         }
 
         function togglePostcardFlip(isFlipToBack) {
