@@ -606,9 +606,9 @@
                     <span class="choice-node" style="color: #888;">NODE: SKIP</span>
                     <span class="choice-bracket">]</span>
                 </div>
-                <div class="choice-option" onclick="selectEmotionBranch('UNVEIL')">
+                <div class="choice-option" onclick="selectEmotionBranch('connect')">
                     <span class="choice-bracket">[</span>
-                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: UNVEIL</span>
+                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: connect</span>
                     <span class="choice-bracket">]</span>
                 </div>
             `;
@@ -618,7 +618,7 @@
             choicesShown = false;
             emotionBranchChosen = true; 
 
-            if (branch === 'UNVEIL') {
+            if (branch === 'connect') {
                 hasViewedEmotion = true; 
                 isReadingSecretPage = true;
                 secretPageIndex = 0; 
@@ -627,7 +627,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        event: "UNVEIL_EMOTION_BRANCH",
+                        event: "connect_EMOTION_BRANCH",
                         timestamp: new Date().toISOString(),
                         message: "Xinyu Shen 选择了揭示查看你拆分预留的多页隐藏情绪文本。"
                     })
