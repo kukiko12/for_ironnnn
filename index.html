@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life_Reconstruction_JunxianZhou</title>
+    <title>Life_Reconstruction_e4U</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zpix-web@1.1.8/dist/zpix.css">
     <style>
         :root {
@@ -37,10 +37,10 @@
             z-index: 1;
         }
 
-        /* 启动页 */
+        /* 🖥️ 启动页全局重构：注入 S4U 点阵艺术美学 */
         #launcher {
             position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(245, 242, 232, 0.85), rgba(245, 242, 232, 0.85)), url('./launcher_bk.gif');
+            background-image: linear-gradient(rgba(235, 230, 215, 0.88), rgba(235, 230, 215, 0.88)), url('./launcher_bk.gif');
             background-size: cover;
             background-position: center;
             display: flex; flex-direction: column;
@@ -48,41 +48,81 @@
             transition: opacity 0.5s ease;
         }
 
-        .loading-title {
-            font-size: 24px; color: #222; letter-spacing: 4px;
-            margin-bottom: 40px; text-align: center; font-weight: bold;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-            position: relative; z-index: 2;
+        /* 模拟复古点阵玻璃屏的微弱扫描线纹理 */
+        #launcher::after {
+            content: " ";
+            display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.06) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 36, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 6px 100%;
+            z-index: 3; pointer-events: none;
         }
 
-        .progress-bar { width: 350px; height: 6px; background: #dcdcc6; position: relative; border: 1px solid #c8c8b0; z-index: 2; }
-        .progress-fill { width: 0%; height: 100%; background: var(--s4u-magenta); transition: width 0.1s linear; }
+        .loading-title {
+            font-size: 26px; color: #1a1a1a; letter-spacing: 2px;
+            margin-bottom: 35px; text-align: center; font-weight: bold;
+            font-family: "Zpix", monospace;
+            /* 双层纯色硬像素阴影 */
+            text-shadow: 2px 2px 0px #c0bfa8, 4px 4px 0px rgba(0,0,0,0.08);
+            position: relative; z-index: 4;
+        }
 
-        /* 💾 启动页新增图片展示入口样式 */
+        /* 重构为怀旧独立游戏风的重卡槽粗进度条框架 */
+        .progress-bar { 
+            width: 420px; 
+            height: 26px; 
+            background: #121212; 
+            position: relative; 
+            border: 3px solid #121212; 
+            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.15);
+            z-index: 4; 
+            padding: 2px;
+            box-sizing: border-box;
+        }
+        
+        /* 内部填充：像素方块颗粒感的阶梯式纹理 */
+        .progress-fill { 
+            width: 0%; 
+            height: 100%; 
+            background: var(--s4u-magenta); 
+            background-image: linear-gradient(90deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);
+            background-size: 16px 100%;
+            transition: width 0.1s linear; 
+        }
+
+        /* 进度条右侧内嵌的 S4U 专属状态块 */
+        .progress-bar::after {
+            content: "S4U";
+            position: absolute; right: 6px; top: 3px;
+            font-family: "Zpix", monospace; font-size: 11px; font-weight: bold;
+            color: rgba(255, 255, 255, 0.35); line-height: 16px;
+        }
+
         .launcher-image-container {
-            margin-top: 30px;
-            z-index: 2;
-            padding: 6px;
+            margin-top: 35px;
+            z-index: 4;
+            padding: 5px;
             background: var(--paper-color);
-            border: 2px solid #cbd2d6;
-            box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.2);
+            border: 3px solid #121212;
+            box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.15);
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.2s ease;
-        }
-        .launcher-image-container:hover {
-            transform: scale(1.02);
+            transition: transform 0.15s ease;
         }
         .launcher-image-container img {
-            max-width: 240px;
-            max-height: 180px;
+            max-width: 260px;
+            max-height: 190px;
             display: block;
-            image-rendering: pixelated; /* 保证像素图在任何缩放下拉伸不模糊 */
+            image-rendering: pixelated;
             border: 1px solid #cbd2d6;
         }
 
-        #start-prompt { margin-top: 35px; font-size: 18px; color: var(--s4u-magenta); display: none; animation: blink 1.2s infinite; font-weight: bold; z-index: 2; }
+        #start-prompt { 
+            margin-top: 35px; font-size: 18px; color: var(--s4u-magenta); 
+            display: none; animation: blink 1.2s infinite; font-weight: bold; z-index: 4;
+            font-family: "Zpix", monospace;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
 
         /* 主展示画布 */
         #stage {
@@ -328,7 +368,7 @@
             <span class="code-keyword">const</span> <span class="code-var">runtime</span> = <span class="code-keyword">new</span> <span class="code-type">AuditExecutor</span>({<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;executor: <span class="code-string">"Junxian Zhou"</span>,<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;contributor: <span class="code-string">"Xinyu Shen"</span>,<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;status: <span class="code-type">Status</span>.<span class="code-var">RELATIONSHIP_RECONSTRUCTION_ACTIVE</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;status: <span class="code-type">Status</span>.<span class="code-var">RELATIONSHIP_RECONSTRUCTION_ACTIVE_e4U</span><br>
             });<br>
             <span class="code-keyword">export default</span> <span class="code-var">runtime</span>.<span class="code-var">execute</span>(() => <span class="code-string">"friends_and_peace"</span>);
         </div>
@@ -660,22 +700,35 @@
                 const sheepCardHtml = `
                     <div style="
                         margin-top: 25px;
-                        padding: 18px;
+                        padding: 22px;
                         background: #fdfaf2;
                         border: 2px solid #cbd2d6;
                         box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
                         display: flex;
-                        gap: 20px;
+                        gap: 22px;
                         align-items: center;
                         animation: fadeIn 0.6s ease;
                     ">
                         <div style="text-align: center; flex-shrink: 0; font-family: 'Zpix', monospace;">
                             <pre style="margin: 0; font-family: monospace; font-size: 8px; line-height: 1.1; color: #555;">
+   _  _
+  (o)(o)
+   (  )
+   m--m
                             </pre>
-                            <div style="font-size: 11px; color: #777; margin-top: 4px; font-weight: bold;">晚安小咩</div>
+                            <div style="font-size: 11px; color: #777; margin-top: 6px; font-weight: bold;">晚安小咩</div>
                         </div>
-                        <div style="font-size: 15px; line-height: 1.8; color: #232323; letter-spacing: 1px; font-family: 'Zpix', 'SimSun', monospace;">
-                            永远开心幸福没有痛苦很难，<br>所以我祝你有若干个安睡的夜晚，不会落泪的清晨，不会被设计院封锁的灵魂。
+                        
+                        <div style="color: #232323; font-family: 'Zpix', 'SimSun', monospace; display: flex; flex-direction: column; gap: 12px;">
+                            <div style="font-size: 13px; line-height: 1.6; color: #666; letter-spacing: 0.5px; border-bottom: 1px dashed #cbd2d6; padding-bottom: 10px;">
+                                You Are Here.<br>
+                                In the eternal NOW,<br>
+                                At the intersection of the past and the future.<br>
+                                And there is nowhere else that you can be.
+                            </div>
+                            <div style="font-size: 15px; line-height: 1.6; color: #232323; letter-spacing: 1px; font-weight: bold;">
+                                永远开心幸福没有痛苦很难，<br>所以我祝你有若干个安睡的夜晚，不会落泪的清晨，不会被设计院封锁的灵魂。
+                            </div>
                         </div>
                     </div>
                 `;
