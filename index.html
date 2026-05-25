@@ -366,6 +366,7 @@
     </div>
 
     <script>
+        // 📚 10页正文剧情流
         const pages = [
             "密涅瓦的猫头鹰在黄昏起飞。所以在经历了这不知道多少天的闭门沉思之后，我才意识到，我一直以来维系自己生活的这套符号化法则非常脆弱，也会经常性的伤害别人，在我写下这些符号化的语言之前，我最先要说，对不起。",
             "清晨的时候，那时候的我被多巴胺和救助感蒙蔽。那个时候的我只是沉浸在一种救助别人和欣赏别人痛苦的自满自足之中，根本就察觉不到他，我其实是总觉得自己高人一等的",
@@ -386,6 +387,448 @@
             "PART_10 // 在星水街等待的那只鸟"
         ];
 
+        // 🔒 5页隐藏情绪流
         const secretEmotionPages = [
             "这个月我大概花了很长时间去离开我原来的所谓越痛苦越深刻的舒适圈，我是一个很矛盾且傲慢的人，所以我明白我真的欠您一个非常认真的道歉。\n\n那天我们的真心换真心，但是我没有真的很认真地去理解那段话的意义，我对此非常抱歉。",
-            "我之后一定不会散发那些晦暗的东西了，这阵
+            "我之后一定不会散发那些晦暗的东西了，这阵自由的风，我很珍惜我们的磁场，希望您能再相信我一次，人生是莫比乌斯环. 初识的那个起点，那个让彼此舒服的地方，我们还会走回去的。这次我会承担我该承担的，做一些真正利他的事情。",
+            "你之前说我有点理想主义倾向，其实不完全是，我是一个带有解离倾向的加速主义者，所以在面对一些我很害怕的事情的时候，我也会应激因此做一些很诡异的事情，让你觉得我不像我。",
+            "在这一个多月的时间里面，我走访了很多对我产生影响的人，并且针对让调酒师重新为我调酒进行了专门训练（？），我不会再让你承担边界之外的东西了，我的问题我会自己克服，我只是不太想失去一个有意思拥有的灵魂或者样本，就像我们刚认识那天那样。",
+            "虽然我可能只是一个偶然与你相遇的人（？），但我真的相信，人与人之间的连接本身就是有意义的。如果我不尽全力去珍惜它，我一定会后悔。所以，我会以一个全新的自己，更加认真地去守护这段友谊——不再把痛苦误认为深刻的我，以一种温和，坚韧，可能有点阴暗但不会像炸弹一样的方式，我不会自己给自己徒增危机感。"
+        ];
+
+        const finalPage = "密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上，我希望您的开放世界充满色彩和希望，让优秀成为一种习惯吧。\n\nMy sincerest apologies.";
+        const finalSubtitle = "FIN // MY_SINCEREST_APOLOGIES";
+
+        let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
+        let timer = null;
+        let choicesShown = false;
+        
+        let emotionBranchChosen = false; 
+        let isReadingSecretPage = false;
+        let secretPageIndex = 0; 
+        let isReadingFinalPage = false;
+        let hasViewedEmotion = false; 
+
+        let currentAudio = null;
+        let fadeInterval = null;
+        let audioCtx = null; 
+
+        function playBeep(freq = 800, duration = 0.01) {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function playPunchThud() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } catch(e) {}
+        }
+
+        function runLoader() {
+            if (progress < 100) {
+                progress += 4;
+                if(progress > 100) progress = 100;
+                document.getElementById('bar').style.width = progress + "%";
+                setTimeout(runLoader, 40);
+            } else {
+                canStart = true;
+                document.getElementById('start-prompt').style.display = 'block';
+            }
+        }
+        runLoader();
+
+        function attemptStart() {
+            if (!canStart) {
+                progress = 100;
+                document.getElementById('bar').style.width = "100%";
+                canStart = true;
+                document.getElementById('start-prompt').style.display = 'block';
+                return; 
+            }
+
+            if (canStart) {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                playBeep(400, 0.1);
+                document.getElementById('launcher').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('launcher').style.display = 'none';
+                    document.getElementById('stage').style.display = 'flex';
+                    showPage();
+                }, 500);
+            }
+        }
+
+        function updateSubtitle() {
+            const subArea = document.getElementById('subtitle-area');
+            if (isReadingSecretPage) {
+                let pageNumber = String(secretPageIndex + 1).padStart(2, '0');
+                subArea.innerText = `SUB_LOG_${pageNumber} // AREA_A`;
+            } else if (isReadingFinalPage) {
+                subArea.innerText = finalSubtitle;
+            } else {
+                subArea.innerText = subtitlePages[currentPage];
+            }
+        }
+
+        function showPage() {
+            isTyping = true;
+            charIndex = 0;
+            document.getElementById('text-area').innerHTML = "";
+            document.getElementById('proceed-hint').style.display = "none";
+            updateSubtitle(); 
+            typeChar();
+        }
+
+        function typeChar() {
+            let text = "";
+            if (isReadingSecretPage) {
+                text = secretEmotionPages[secretPageIndex]; 
+            } else if (isReadingFinalPage) {
+                text = finalPage;
+            } else {
+                text = pages[currentPage];
+            }
+
+            if (charIndex < text.length) {
+                document.getElementById('text-area').innerHTML += text.charAt(charIndex);
+                charIndex++;
+                if (charIndex % 2 === 0) playBeep(1200, 0.008); 
+                timer = setTimeout(typeChar, 40);
+            } else {
+                completePage();
+            }
+        }
+
+        function completePage() {
+            clearTimeout(timer);
+            isTyping = false;
+            
+            if (isReadingSecretPage) {
+                document.getElementById('text-area').innerHTML = secretEmotionPages[secretPageIndex];
+            } else if (isReadingFinalPage) {
+                document.getElementById('text-area').innerHTML = finalPage;
+            } else {
+                document.getElementById('text-area').innerHTML = pages[currentPage];
+            }
+
+            const hint = document.getElementById('proceed-hint');
+            hint.innerHTML = "PRESS_TO_CONTINUE ▼";
+            hint.style.color = (isReadingFinalPage || currentPage === pages.length - 1 && !emotionBranchChosen) ? "var(--s4u-cyan)" : "var(--s4u-magenta)";
+            hint.style.display = "block";
+        }
+
+        function handleBoxClick() {
+            if (choicesShown) return;
+
+            if (isTyping) {
+                completePage();
+                playBeep(600, 0.05);
+                return;
+            }
+
+            if (!emotionBranchChosen && currentPage === pages.length - 1 && !isReadingSecretPage && !isReadingFinalPage) {
+                showEmotionInterceptorChoices();
+                return;
+            }
+
+            if (isReadingSecretPage) {
+                if (secretPageIndex < secretEmotionPages.length - 1) {
+                    secretPageIndex++; 
+                    playBeep(900, 0.03);
+                    showPage();
+                } else {
+                    isReadingSecretPage = false;
+                    isReadingFinalPage = true;
+                    playBeep(900, 0.03);
+                    showPage();
+                }
+                return;
+            }
+
+            if (isReadingFinalPage) {
+                showFinalNodeChoices();
+                return;
+            }
+
+            if (currentPage < pages.length - 1) {
+                currentPage++;
+                playBeep(900, 0.03);
+                showPage();
+            }
+        }
+
+        function showEmotionInterceptorChoices() {
+            choicesShown = true;
+            const box = document.getElementById('text-area');
+            document.getElementById('proceed-hint').style.display = 'none';
+            playBeep(500, 0.1);
+
+            box.innerHTML = `
+                <div class="choice-select-label">
+                    // BUFFER_NODE: EMOTION_STREAM_INTERCEPT<br><br>
+                    提示：接下来这段话会有一些关于我的自我的论断和解释，如果您看到这里仍旧感到厌烦的话，请可以选择直接跳过，这封邮件的最重要就是用于道歉和感谢的。
+                </div>
+                <div class="choice-option" onclick="event.stopPropagation(); selectEmotionBranch('SKIP')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: #888;">NODE: SKIP</span>
+                    <span class="choice-bracket">]</span>
+                </div>
+                <div class="choice-option" onclick="event.stopPropagation(); selectEmotionBranch('UNVEIL')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: UNVEIL</span>
+                    <span class="choice-bracket">]</span>
+                </div>
+            `;
+        }
+
+        function selectEmotionBranch(branch) {
+            choicesShown = false;
+            emotionBranchChosen = true; 
+
+            if (branch === 'UNVEIL') {
+                hasViewedEmotion = true; 
+                isReadingSecretPage = true;
+                secretPageIndex = 0; 
+                
+                fetch('https://formspree.io/f/meedgybr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        event: "UNVEIL_EMOTION_BRANCH",
+                        timestamp: new Date().toISOString(),
+                        message: "Xinyu Shen 选择了揭示查看你拆分预留的多页隐藏情绪文本。"
+                    })
+                }).catch(e => console.log("Silent flag bypassed."));
+
+                playBeep(1000, 0.05);
+                showPage();
+            } else {
+                isReadingFinalPage = true;
+                playBeep(600, 0.04);
+                showPage();
+            }
+        }
+
+        function showFinalNodeChoices() {
+            choicesShown = true;
+            const box = document.getElementById('text-area');
+            document.getElementById('proceed-hint').style.display = 'none';
+            document.getElementById('subtitle-area').innerText = "SYS_EXEC // SELECT_ENDING";
+
+            box.innerHTML = `
+                <div class="choice-select-label">// SELECT_ending_NODE</div>
+                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('ARCHIVE')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: #888;">NODE: ARCHIVE</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">汽油 // 魔术师</span>
+                </div>
+                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('SEAGULL')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: var(--s4u-magenta);">NODE: SEAGULL</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">//夏天//海鸥侠</span>
+                </div>
+                <div class="choice-option" onclick="event.stopPropagation(); sendChoice('HORIZON')">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: var(--s4u-cyan);">NODE: HORIZON</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">海的那边，世界的尽头//过去或者未来</span>
+                </div>
+            `;
+            playBeep(400, 0.15);
+        }
+
+        // 🌅 3D明信片翻面渲染
+        function sendChoice(choice) {
+            playPunchThud(); 
+            triggerBGMWithFade(choice); 
+
+            fetch('https://formspree.io/f/meedgybr', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    choice: choice,
+                    emotion_viewed: hasViewedEmotion, 
+                    timestamp: new Date().toISOString(),
+                    message: 'Response from Xinyu Shen'
+                })
+            }).catch(e => console.log("Form check bypassed."));
+
+            const box = document.getElementById('text-area');
+            const messages = {
+                'ARCHIVE': '// STATUS: ARCHIVE_CLOSED.\n// 感谢您曾带我走出房间，祝您未来一切顺利，再次抱歉，至少让我直接说出我很抱歉，我很难受，You are here——祝您在永恒的当下里，拥有不再被晦暗打扰的广阔世界。再次抱歉。',
+                'SEAGULL': '// STATUS: SYSTEM_STANDBY.\n// 密涅瓦的猫头鹰何时落地黑格尔不曾预言，但如果它在日落大道起飞，那时候的我们都会看到万千萤火漫漫飞过。不要再一个人在黑暗里给自己找不痛快了。等心愿都降落，去一切开始的地方吃顿饭吧。',
+                'HORIZON': '// STATUS: NEW_JOURNEY_INITIATED.\n// 在过去与未来的无尽循环中，我们唯一的驻足点就是这里，就是现在。我不确切这个选项代表着什么，或许写下这个网页的我也在犹豫和思考，或许希望我们能在没有黑暗的地方未来重逢，或许让我仰望你高飞的背影。'
+            };
+
+            const footerLabels = {
+                'ARCHIVE': '晚安铁铁',
+                'SEAGULL': '心愿降落',
+                'HORIZON': '极光同行'
+            };
+
+            const backImages = {
+                'ARCHIVE': '1.jpg',
+                'SEAGULL': '2.jpg',
+                'HORIZON': '3.jpg'
+            };
+
+            box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
+            
+            setTimeout(() => {
+                const postcardHtml = `
+                    <div id="postcard-viewport" style="
+                        margin-top: 25px;
+                        perspective: 1200px;
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        animation: fadeIn 0.6s ease;
+                    " onclick="event.stopPropagation();">
+                        <div id="postcard-card" style="
+                            width: 100%;
+                            min-height: 250px;
+                            position: relative;
+                            transform-style: preserve-3d;
+                            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                        ">
+                            
+                            <div style="
+                                position: absolute; width: 100%; height: 100%;
+                                backface-visibility: hidden; -webkit-backface-visibility: hidden;
+                                background: #fdfaf2;
+                                border: 2px solid #cbd2d6;
+                                box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
+                                padding: 22px 22px 45px 22px;
+                                display: flex;
+                                gap: 25px;
+                                align-items: stretch;
+                                text-align: left;
+                                box-sizing: border-box;
+                            ">
+                                <div style="text-align: center; width: 100px; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; font-family: 'Zpix', monospace; border-right: 1px dashed #cbd2d6; padding-right: 15px;">
+                                    <div style="margin-top: 5px;">
+                                        <pre style="margin: 0; font-family: monospace; font-size: 8px; line-height: 1.1; color: #555; display: inline-block; text-align: left;">
+   _  _
+  (o)(o)
+   (  )
+   m--m
+                                        </pre>
+                                    </div>
+                                    <div style="font-size: 13px; color: #444; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${footerLabels[choice]}</div>
+                                </div>
+                                
+                                <div style="color: #232323; font-family: 'Zpix', 'SimSun', monospace; display: flex; flex-direction: column; justify-content: center; gap: 12px; flex-grow: 1; position: relative;">
+                                    <div style="font-size: 13px; line-height: 1.6; color: #666; letter-spacing: 0.5px; white-space: pre-line;">You Are Here.
+In the eternal NOW,
+At the intersection of the past and the future.
+And there is nowhere else that you can be.</div>
+                                    
+                                    <div style="border-top: 1px dashed #cbd2d6; width: 100%;"></div>
+                                    
+                                    <div style="font-size: 15px; line-height: 1.7; color: #232323; letter-spacing: 0.5px; font-weight: bold;">
+                                        永远开心幸福没有痛苦很难，<br>所以我祝你有若干个安睡的夜晚，不会落泪的清晨，不会被设计院封锁的灵魂，桔梗花一样的爱。
+                                    </div>
+                                </div>
+
+                                <div onclick="event.stopPropagation(); togglePostcardFlip(true);" style="
+                                    position: absolute; bottom: 12px; right: 15px;
+                                    padding: 4px 10px; background: #fff;
+                                    border: 1px solid #121212; border-radius: 12px;
+                                    box-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+                                    font-family: 'Zpix', monospace; font-size: 11px; font-weight: bold;
+                                    color: #ff0055; cursor: pointer; transition: all 0.1s ease;
+                                    display: flex; align-items: center; gap: 4px; z-index: 10;
+                                " onmouseover="this.style.background='#ff0055'; this.style.color='#fff';" onmouseout="this.style.background='#fff'; this.style.color='#ff0055';">
+                                    <span>♡</span> Like
+                                </div>
+                            </div>
+                            
+                            <div style="
+                                position: absolute; width: 100%; height: 100%;
+                                backface-visibility: hidden; -webkit-backface-visibility: hidden;
+                                transform: rotateY(180deg);
+                                border: 2px solid #cbd2d6;
+                                box-shadow: 4px 4px 0px rgba(0,0,0,0.15);
+                                background-image: url('./${backImages[choice]}');
+                                background-size: cover;
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                box-sizing: border-box;
+                                border-radius: 2px;
+                                image-rendering: pixelated;
+                            ">
+                                <div onclick="event.stopPropagation(); togglePostcardFlip(false);" style="
+                                    position: absolute; top: 12px; right: 12px;
+                                    width: 22px; height: 22px; background: #ff0055;
+                                    border: 2px solid #fff; border-radius: 50%;
+                                    box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+                                    color: #fff; font-family: monospace; font-size: 14px; font-weight: 900;
+                                    line-height: 18px; text-align: center; cursor: pointer;
+                                    transition: transform 0.1s ease; z-index: 10;
+                                " onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                                    ×
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+                box.innerHTML += postcardHtml;
+                
+                setTimeout(() => {
+                    const card = document.getElementById('postcard-card');
+                    if(card && card.firstElementChild) {
+                        card.style.height = card.firstElementChild.offsetHeight + "px";
+                    }
+                }, 50);
+
+            }, 1000);
+
+            setTimeout(() => {
+                box.innerHTML += `<div class="process-complete">[ PROCESS_COMPLETE ]</div>`;
+            }, 2200);
+        }
+
+        function togglePostcardFlip(isFlipToBack) {
+            const card = document.getElementById('postcard-card');
+            if (card) {
+                if (isFlipToBack) {
+                    card.style.transform = "rotateY(180deg)";
+                    playBeep(1000, 0.04); 
+                } else {
+                    card.style.transform = "rotateY(0deg)";
+                    playBeep(700, 0.04);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
