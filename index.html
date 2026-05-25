@@ -221,7 +221,6 @@
             flex-grow: 1;
         }
 
-        /* 💾 将卡片容器提升至和 text-area 平级，杜绝绝对定位对选项块区域的覆盖阻挡 */
         #postcard-container {
             position: relative;
             z-index: 6;
@@ -265,7 +264,9 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            position: relative; z-index: 99; /* 强制按钮处于交互的最上层 */
+            /* 🛠️ Bug 修复核心 1：强制提升选项块物理层级，击穿任何上层的隐藏边界阴影 */
+            position: relative; 
+            z-index: 999 !important; 
         }
         .choice-option:hover {
             background: rgba(255, 0, 85, 0.08);
@@ -284,6 +285,8 @@
             letter-spacing: 1px;
             font-weight: bold;
             font-family: "Zpix", monospace;
+            position: relative;
+            z-index: 999;
         }
 
         .end-message {
@@ -382,10 +385,10 @@
             "清晨的时候，那时候的我被多巴胺和救助感蒙蔽。那个时候的我只是沉浸在一种救助别人和欣赏别人痛苦的自满自足之中，根本就察觉不到他，我其实是总觉得自己高人一等的",
             "正午的时候，在加速冲刺，试图用不断的接触和高密度的互动来让时间的密度大一些，我依旧没看到我在逃避自我建设，逃避真正的责任。我没有想寻求短择关系，但显然我身上没有什么显示我正在积极的投入自我建设。",
             "密涅瓦的猫头鹰终于在黄昏起飞，我认识到了自己的错误与局限性，即拉康所说的真理的后置性，在第二次错误中，我才理解了第一次错误。我看到了这种法则的失效，也看到了它带来的破坏。我不打算重复它了。",
-            "现在我被放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则烟本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受，我的喜欢，我的痛苦都被我符号化了，缺乏直接表达感受的能力。",
+            "现在我被放逐了一段时间，我不知道会是多久，但是我现在已经明白了我的那套法则根本不适用。我在相处过程中符号化了所有人，却逃避了最直接的感受，我的喜欢，我的痛苦都被我符号化了，缺乏直接表达感受的能力。",
             "我在toxic的环境下呆久了，我觉得痛苦很深刻，快乐很肤浅，所以矛盾和争执是必须的。不相信缓慢，日常，自然的生活会把我带向更好的地方，所以做了很多加速倾向的事情，现在想来你说的是对的，即便被生活推着走，也能有直接的感受。",
             "所以我在错误的时机做了那件事情，所以我会说“世界对我一直是残酷的”。打碎这一层外壳后，其实不是，如果真的是残酷的，我就不会遇到您或者其他愿意帮助我的人了，我只是在给自己找不痛快，我总觉得安稳和幸福会离我而去。",
-            "本质上我还是在符号化痛苦并将之作为生命的燃料，我真的没有把别人当垃圾桶，只是那天收不住然后有些失控了。所以这显然不是长久之计，我看到了我的病灶。很多条路线我会一个人先走一段，去办好该办的事。",
+            "本质上我还是在符号化痛苦并将之作为生命的燃料，我真的没有把别人当垃圾桶，只是那天收不住然后有些失控了。所以这显然实现长久之计，我看到了我的病灶。很多条路线我会一个人先走一段，去办好该办的事。",
             "不过我仍然觉得您是一个有意思的人。加缪的夏天集里面说的不可战胜的夏天，在您身上还没有完全消失。您的出现是我曾经符号化世界里面无法解释的奇点。我一直觉得“理解世界，享受世界，挑战世界是不可能三角”。我身边的很多人都深受其苦吧，但是至少我在你身上能隐约看到他们的汇合性，你会成功的，我真心祝福你。",
             "在我过去的人生大部分时间里面，我只能做到第一位和第三位，但是我在您身上看到了生命的整合力。虽然你身上也有一些可以见到的问题，不过瑕不掩瑜啦。需要一段时间寻找真我，可能并不是我经历过的事情，而是我正在经历的事情，而且我觉得——\n\n这可能才是我该办的事情中，最重要的那一件。"
         ];
@@ -509,7 +512,7 @@
             isTyping = true;
             charIndex = 0;
             document.getElementById('text-area').innerHTML = "";
-            document.getElementById('postcard-container').innerHTML = ""; // 清空上一轮明信片
+            document.getElementById('postcard-container').innerHTML = ""; 
             document.getElementById('proceed-hint').style.display = "none";
             updateSubtitle(); 
             typeChar();
@@ -679,6 +682,9 @@
             playPunchThud(); 
             triggerBGMWithFade(choice); 
 
+            // 🛠️ Bug 修复核心 2：立即重置选项状态锁，阻断多重 DOM 点击碰撞引发的系统死锁
+            choicesShown = false; 
+
             fetch('https://formspree.io/f/meedgybr', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -711,14 +717,12 @@
                 'HORIZON': '3.jpg'
             };
 
-            // 清空并打出结局提示
             box.innerHTML = `<div class="end-message">${messages[choice]}</div>`;
             
-            // 📬 🛠️ 关键修复：将 3D 明信片组件从 text-area 隔离，挂载到独立的高层容器中，防止覆盖按钮点击区域
             setTimeout(() => {
                 const postcardHtml = `
                     <div id="postcard-viewport" style="
-                        margin-top: 2px;
+                        margin-top: 25px;
                         perspective: 1200px;
                         width: 100%;
                         display: flex;
