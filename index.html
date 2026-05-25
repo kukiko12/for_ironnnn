@@ -40,7 +40,7 @@
         /* 🖥️ 启动页：注入 S4U 像素美学 */
         #launcher {
             position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(235, 230, 215, 0.88), rgba(235, 230, 215, 0.88)), url('./launcher_bk.gif');
+            background-image: lineCONNECT-gradient(rgba(235, 230, 215, 0.88), rgba(235, 230, 215, 0.88)), url('./launcher_bk.gif');
             background-size: cover;
             background-position: center;
             display: flex; flex-direction: column;
@@ -567,8 +567,8 @@
                 <div class="choice-option" id="btn-skip">
                     <span class="choice-bracket">[</span><span class="choice-node" style="color: #888;">NODE: SKIP</span><span class="choice-bracket">]</span>
                 </div>
-                <div class="choice-option" id="btn-unveil">
-                    <span class="choice-bracket">[</span><span class="choice-node" style="color: var(--s4u-magenta);">NODE: UNVEIL</span><span class="choice-bracket">]</span>
+                <div class="choice-option" id="btn-CONNECT">
+                    <span class="choice-bracket">[</span><span class="choice-node" style="color: var(--s4u-magenta);">NODE: CONNECT</span><span class="choice-bracket">]</span>
                 </div>
             `;
 
@@ -576,9 +576,9 @@
                 e.stopPropagation();
                 selectEmotionBranch('SKIP');
             });
-            document.getElementById('btn-unveil').addEventListener('click', function(e) {
+            document.getElementById('btn-CONNECT').addEventListener('click', function(e) {
                 e.stopPropagation();
-                selectEmotionBranch('UNVEIL');
+                selectEmotionBranch('CONNECT');
             });
         }
 
@@ -586,11 +586,11 @@
             choicesShown = false;
             emotionBranchChosen = true; 
 
-            if (branch === 'UNVEIL') {
+            if (branch === 'CONNECT') {
                 hasViewedEmotion = true; isReadingSecretPage = true; secretPageIndex = 0; 
                 fetch('https://formspree.io/f/meedgybr', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ event: "UNVEIL_EMOTION_BRANCH", timestamp: new Date().toISOString() })
+                    body: JSON.stringify({ event: "CONNECT_EMOTION_BRANCH", timestamp: new Date().toISOString() })
                 }).catch(e => {});
                 playBeep(1000, 0.05); showPage();
             } else {
