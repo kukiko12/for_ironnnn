@@ -399,6 +399,43 @@
         const finalPage = "我幻想能度过一个更加幸福的夏天而做了一些不理智的事情，但事后我发现，在这之前我已经在那个我所希望的不可战胜的夏天之中了，我已经足够幸福了，一个因为我的问题的夏天，所以我不想让她完全消失。密涅瓦的猫头鹰何时落地黑格尔不曾预言，但我希望它落在我们不再颤抖的肩膀上。我希望您的开放世界充满色彩和希望，让优秀成为一种习惯，永远闪耀，永远与众不同。\n\nMy sincerest apologies.";
         const finalSubtitle = "FIN // MY_SINCEREST_APOLOGIES";
 
+        const signalPage = `
+我这段时间把s4U又玩了一遍，因为上一次玩是23年，所以其实有了很多新的感触。
+
+我对我们这几个月的相处很喜欢，可能是因为我们确实是超脱于学业与工作的？
+
+而是一种很难描述的感觉，有点像s4u里面某一章讲的成为学徒之前的nami吧可能。
+
+在我们出去玩的，我希望可预见性的未来永远不会到来，我希望出租车没有尽头。
+
+不是因为未来不好，我在您这个阶段也是尝试了实习推免留学之后选择了来到了复旦，我当然也有自己想要的未来。
+
+而是因为那个春天已经很好了。
+
+我们聊S4U，聊梦想，聊书本，聊那些光怪陆离的故事。
+
+时间第一次慢了下来，我可以只是感受和享受。
+
+只是期待下一个故事，下一张表情包，下一个奶龙或者塔菲，或者某个突然出现的话题，一些有趣的音乐或者日常。
+
+和您聊天的那几个月，我的人生第一次慢下来，其实那几个月我身上那些危机感轻了很多，我相信一开始你也能感觉到我是有趣的。
+
+后来发生了很多事情，我前面已经解释了，是我自己打破了那种东西，我很抱歉。
+
+但我依然觉得，那些感受是真的。
+
+就像发射出去的无线电波一样。
+
+即使离开发射塔很远很远。
+
+即使无法绕一圈回到发送的那个冬夜。
+
+它们依然在某个地方安静地向前传播。
+
+不过或许就是这样吧，能肩并肩看电影的时刻总是短暂的，我们要各自穿过人生转折处的溪流了。
+`;
+        const signalSubtitle = "PART_11 // 永不消逝的电波";
+
         let currentPage = 0, charIndex = 0, isTyping = false, progress = 0, canStart = false;
         let timer = null;
         let choicesShown = false;
@@ -407,6 +444,7 @@
         let isReadingSecretPage = false;
         let secretPageIndex = 0; 
         let isReadingFinalPage = false;
+        let isReadingSignalPage = false;
         let hasViewedEmotion = false; 
 
         let currentAudio = null;
@@ -484,6 +522,8 @@
             const subArea = document.getElementById('subtitle-area');
             if (isReadingSecretPage) {
                 subArea.innerText = `SUB_LOG_${String(secretPageIndex + 1).padStart(2, '0')} // 单向融毁的机器`;
+            } else if (isReadingSignalPage) {
+                subArea.innerText = signalSubtitle;
             } else if (isReadingFinalPage) {
                 subArea.innerText = finalSubtitle;
             } else {
@@ -501,7 +541,7 @@
         }
 
         function typeChar() {
-            let text = isReadingSecretPage ? secretEmotionPages[secretPageIndex] : (isReadingFinalPage ? finalPage : pages[currentPage]);
+            let text = isReadingSecretPage ? secretEmotionPages[secretPageIndex] : (isReadingSignalPage ? signalPage : (isReadingFinalPage ? finalPage : pages[currentPage]));
             if (charIndex < text.length) {
                 document.getElementById('text-area').innerHTML += text.charAt(charIndex);
                 charIndex++;
@@ -515,7 +555,7 @@
         function completePage() {
             clearTimeout(timer);
             isTyping = false;
-            let text = isReadingSecretPage ? secretEmotionPages[secretPageIndex] : (isReadingFinalPage ? finalPage : pages[currentPage]);
+            let text = isReadingSecretPage ? secretEmotionPages[secretPageIndex] : (isReadingSignalPage ? signalPage : (isReadingFinalPage ? finalPage : pages[currentPage]));
             document.getElementById('text-area').innerHTML = text;
 
             const hint = document.getElementById('proceed-hint');
@@ -542,8 +582,15 @@
                 return;
             }
 
-            if (isReadingFinalPage) {
+            if (isReadingSignalPage) {
+                isReadingSignalPage = false;
                 showFinalNodeChoices();
+                return;
+            }
+
+            if (isReadingFinalPage) {
+                isReadingFinalPage = false;
+                showSignalChoice();
                 return;
             }
 
@@ -595,6 +642,52 @@
             } else {
                 isReadingFinalPage = true; playBeep(600, 0.04); showPage();
             }
+        }
+
+
+        function showSignalChoice() {
+            choicesShown = true;
+
+            const box = document.getElementById('text-area');
+            document.getElementById('proceed-hint').style.display = 'none';
+            document.getElementById('subtitle-area').innerText = "SYS_EXEC // OPTIONAL_LOG";
+
+            box.innerHTML = `
+                <div class="choice-select-label">
+                    // OPTIONAL_MEMORY_FRAGMENT<br><br>
+                    这里还有一段关于春天、电波和出租车的碎碎念。<br>
+                    如果您已经不想继续看下去，可以直接前往结局。
+                </div>
+
+                <div class="choice-option" id="btn-signal">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color: var(--s4u-cyan);">SIGNAL</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">碎碎念</span>
+                </div>
+
+                <div class="choice-option" id="btn-skip-signal">
+                    <span class="choice-bracket">[</span>
+                    <span class="choice-node" style="color:#888;">SKIP</span>
+                    <span class="choice-bracket">]</span>
+                    <span class="choice-text">直接前往结局</span>
+                </div>
+            `;
+
+            document.getElementById('btn-signal').addEventListener('click', function(e) {
+                e.stopPropagation();
+                choicesShown = false;
+                isReadingSignalPage = true;
+                playBeep(1000, 0.05);
+                showPage();
+            });
+
+            document.getElementById('btn-skip-signal').addEventListener('click', function(e) {
+                e.stopPropagation();
+                choicesShown = false;
+                playBeep(600, 0.04);
+                showFinalNodeChoices();
+            });
         }
 
         function showFinalNodeChoices() {
